@@ -229,6 +229,7 @@ export default {
             itemsCurrency: [],
             selectCurrency: '',
             idTipoArticulo: 0,
+            idCurrency: 0,
             cost: 0,
             costUSD: 0,
             message: {
@@ -293,7 +294,7 @@ export default {
                     "Authorization": "Bearer " + self.token
                 },
                 data: {
-                    idMoneda: 1,
+                    idMoneda: self.idCurrency,
                     precioMayor: self.major,
                     precioMenor: self.minor,
                     distribuidor: self.distributor,
@@ -352,7 +353,7 @@ export default {
             })
             .then(success => {
                 for (let i = 0; i < success.data.rows.length; i++) {
-                    self.itemsCurrency.push({ state: success.data.rows[i].DESCRIPTION, value: success.data.rows[i].EXCHANGE });
+                    self.itemsCurrency.push({ id: success.data.rows[i].ID, state: success.data.rows[i].DESCRIPTION, value: success.data.rows[i].EXCHANGE });
                     
                 }
 
@@ -363,6 +364,7 @@ export default {
             });
         },
         changedValue: function(selected) {
+            this.idCurrency = selected.id;
             this.selectCurrency = selected;
             let total = 0;
             if (this.idTipoArticulo === 2) {
