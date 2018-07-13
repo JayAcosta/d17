@@ -47,6 +47,9 @@
                 <div v-else-if="transitionComponent === 'Cotizacion'">
                     <lista-moneda />
                 </div>
+                <div v-else-if="transitionComponent === 'Clientes'">
+                    <lista-clientes />
+                </div>
             </v-layout>
         </v-container>
     
@@ -94,6 +97,7 @@ import axios from "axios";
 import ListaArticulos from "@/components/Articulos/ListaArticulos";
 import ListaMoneda from "@/components/Moneda/ListaMoneda";
 import Precios from "@/components/Precios/Precios";
+import Cliente from "@/components/Cliente/Cliente";
 
 // Config
 import { 
@@ -104,7 +108,8 @@ export default {
     components:{
         'lista-articulos': ListaArticulos,
         'lista-moneda': ListaMoneda,
-        'lista-precios': Precios
+        'lista-precios': Precios,
+        'lista-clientes': Cliente
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -153,6 +158,9 @@ export default {
                 }, {
                     title: 'Cotizacion',
                     icon: 'attach_money'
+                }, {
+                    title: 'Clientes',
+                    icon: 'person_add'
                 }
             ],
             message: {
@@ -201,6 +209,12 @@ export default {
             } else if (option === 'Cotizacion') {
                 if (self.transitionComponent !== 'Cotizacion') {
                     self.transitionComponent = 'Cotizacion';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Clientes') {
+                if (self.transitionComponent !== 'Clientes') {
+                    self.transitionComponent = 'Clientes';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

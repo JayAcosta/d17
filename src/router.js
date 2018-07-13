@@ -9,6 +9,7 @@ import ListaArticulos from "@/components/Articulos/ListaArticulos";
 import TipoArticulo from "@/components/Articulos/TipoArticulo";
 import Precios from "@/components/Precios/Precios";
 import ListaMoneda from "@/components/Moneda/ListaMoneda"
+import Cliente from "@/components/Cliente/Cliente";
 // import PageNotFound from "@/components/PageNotFound/PageNotFound";
 
 Vue.use(Router)
@@ -36,6 +37,9 @@ export default new Router({
     }, {
         path: '/moneda',
         component: ListaMoneda
+    }, {
+        path: '/cliente',
+        component: Cliente
     }
   ]
 });

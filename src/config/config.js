@@ -1,7 +1,7 @@
 'use strict';
 
 const CONFIG = {
-    "SERVICE_BASE": "http://192.168.0.8:8000/api",
+    "SERVICE_BASE": "http://192.168.0.8:9020/api",
     "SERVICE_URL": {
         "BASE": "/",
         "REGISTRO": "/registrer",
@@ -19,7 +19,14 @@ const CONFIG = {
         "ALLARTICLESANDPRICE":"/articulos/precios",
         "GETCURRENCY": "/currency/all",
         "ADDCURRENCY": "/currency",
-        "FILLCURRENCY": "/currency/fill"
+        "FILLCURRENCY": "/currency/fill",
+        "FILLTIPODOCUMENTO": "/tipos-documentos/fill",
+        "ADDCLIENT": "/cliente/add",
+        "ALLCLIENT": "/cliente/all",
+        "EDITCLIENT": "/cliente/edit",
+        "SOFTDELETECLIENT": "/cliente/soft-delete",
+        "ALLDISABLEDCLIENT": "/cliente/all/disable",
+        "ENABLECLIENT": "/cliente/enable"
     }
 };
 
