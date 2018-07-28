@@ -10,6 +10,8 @@ import TipoArticulo from "@/components/Articulos/TipoArticulo";
 import Precios from "@/components/Precios/Precios";
 import ListaMoneda from "@/components/Moneda/ListaMoneda"
 import Cliente from "@/components/Cliente/Cliente";
+import Proveedor from "@/components/Proveedor/Proveedor";
+import CtaCte from "@/components/CtaCte/CtaCte";
 // import PageNotFound from "@/components/PageNotFound/PageNotFound";
 
 Vue.use(Router)
@@ -40,6 +42,12 @@ export default new Router({
     }, {
         path: '/cliente',
         component: Cliente
+    }, {
+        path: '/proveedor',
+        component: Proveedor
+    }, {
+        path: '/cuenta-corriente',
+        component: CtaCte
     }
   ]
 });

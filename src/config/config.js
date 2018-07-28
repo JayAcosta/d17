@@ -26,7 +26,20 @@ const CONFIG = {
         "EDITCLIENT": "/cliente/edit",
         "SOFTDELETECLIENT": "/cliente/soft-delete",
         "ALLDISABLEDCLIENT": "/cliente/all/disable",
-        "ENABLECLIENT": "/cliente/enable"
+        "ENABLECLIENT": "/cliente/enable",
+        "ADDPROVIDER": "/provider/add",
+        "LISTPROVIDER": "/provider/all",
+        "DISABLEPROVIDER": "/provider/soft-delete",
+        "UPDATEPROVIDER": "/provider/edit",
+        "GETDISABLEDPROVIDERS": "/provider/all/disable",
+        "PROVIDER": "/provider",
+        "SEAL": "/seal",
+        "SERVE": "/serve",
+        "ENABLEPROVIDER": "/provider/enable",
+        "FILLCLIENT": "/client/fill",
+        "CLIENT": "/client",
+        "ACCOUNT": "/account",
+        "MOV": "/movement"
     }
 };
 

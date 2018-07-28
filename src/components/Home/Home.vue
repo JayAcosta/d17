@@ -50,6 +50,12 @@
                 <div v-else-if="transitionComponent === 'Clientes'">
                     <lista-clientes />
                 </div>
+                <div v-else-if="transitionComponent === 'Proveedor'">
+                    <lista-proveedores />
+                </div>
+                <div v-else-if="transitionComponent === 'Cta/Cte'">
+                    <cuenta-corriente />
+                </div>
             </v-layout>
         </v-container>
     
@@ -98,7 +104,8 @@ import ListaArticulos from "@/components/Articulos/ListaArticulos";
 import ListaMoneda from "@/components/Moneda/ListaMoneda";
 import Precios from "@/components/Precios/Precios";
 import Cliente from "@/components/Cliente/Cliente";
-
+import Proveedor from "@/components/Proveedor/Proveedor";
+import CtaCte from "@/components/CtaCte/CtaCte";
 // Config
 import { 
     CONFIG
@@ -109,7 +116,9 @@ export default {
         'lista-articulos': ListaArticulos,
         'lista-moneda': ListaMoneda,
         'lista-precios': Precios,
-        'lista-clientes': Cliente
+        'lista-clientes': Cliente,
+        'lista-proveedores': Proveedor,
+        'cuenta-corriente': CtaCte
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -161,6 +170,12 @@ export default {
                 }, {
                     title: 'Clientes',
                     icon: 'person_add'
+                }, {
+                    title: 'Proveedor',
+                    icon: 'local_shipping'
+                }, {
+                    title: 'Cta/Cte',
+                    icon: 'bar_chart'
                 }
             ],
             message: {
@@ -215,6 +230,18 @@ export default {
             } else if (option === 'Clientes') {
                 if (self.transitionComponent !== 'Clientes') {
                     self.transitionComponent = 'Clientes';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Proveedor') {
+                if (self.transitionComponent !== 'Proveedor') {
+                    self.transitionComponent = 'Proveedor';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Cta/Cte') {
+                if (self.transitionComponent !== 'Cta/Cte') {
+                    self.transitionComponent = 'Cta/Cte';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

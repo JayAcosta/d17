@@ -167,7 +167,7 @@
                         <v-icon>cached</v-icon>
                     </v-btn>
                     <v-btn flat icon color="gray" v-on:click="openDialogList">
-                        <v-icon>check_circle_outline</v-icon>
+                        <v-icon>toc</v-icon>
                     </v-btn>
                     <v-text-field
                         v-model="search"
@@ -616,7 +616,17 @@ export default {
             self.dialog = !self.dialog;
             self.title = 'Editar Cliente';
             self.isEdit = true;
-            self.showNDocument = true;
+            if (item.TIP_DOC_DES === 'CUIL') {
+                self.showNDocument = true;
+                self.mask = '##-########-#';
+            } else if (item.TIP_DOC_DES === 'CUIT') {
+                self.showNDocument = true;
+                self.mask = '##-########-#';
+            } else if (item.TIP_DOC_DES === 'DNI') {
+                self.showNDocument = true;
+                self.mask = '##.###.###';
+            }
+            // self.showNDocument = true;
             self.getIdTipoDocumento();
             self.id = item.ID,
             self.selectTipoDocumento = item.TIP_DOC_DES;
