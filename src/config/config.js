@@ -39,7 +39,9 @@ const CONFIG = {
         "FILLCLIENT": "/client/fill",
         "CLIENT": "/client",
         "ACCOUNT": "/account",
-        "MOV": "/movement"
+        "MOV": "/movement",
+        "FILLPROVIDER": "/provider/fill",
+        "DET": "/detail"
     }
 };
 

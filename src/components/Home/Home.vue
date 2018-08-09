@@ -56,6 +56,9 @@
                 <div v-else-if="transitionComponent === 'Cta/Cte'">
                     <cuenta-corriente />
                 </div>
+                <div v-else-if="transitionComponent === 'Proveedor Cta/Cte'">
+                    <proveedor-cuenta-corriente />
+                </div>
             </v-layout>
         </v-container>
     
@@ -106,6 +109,7 @@ import Precios from "@/components/Precios/Precios";
 import Cliente from "@/components/Cliente/Cliente";
 import Proveedor from "@/components/Proveedor/Proveedor";
 import CtaCte from "@/components/CtaCte/CtaCte";
+import ProveedorCtaCte from "@/components/ProveedorCtaCte/ProveedorCtaCte";
 // Config
 import { 
     CONFIG
@@ -118,7 +122,8 @@ export default {
         'lista-precios': Precios,
         'lista-clientes': Cliente,
         'lista-proveedores': Proveedor,
-        'cuenta-corriente': CtaCte
+        'cuenta-corriente': CtaCte,
+        'proveedor-cuenta-corriente': ProveedorCtaCte
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -175,6 +180,9 @@ export default {
                     icon: 'local_shipping'
                 }, {
                     title: 'Cta/Cte',
+                    icon: 'bar_chart'
+                }, {
+                    title: 'Proveedor Cta/Cte',
                     icon: 'bar_chart'
                 }
             ],
@@ -242,6 +250,12 @@ export default {
             } else if (option === 'Cta/Cte') {
                 if (self.transitionComponent !== 'Cta/Cte') {
                     self.transitionComponent = 'Cta/Cte';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Proveedor Cta/Cte') {
+                if (self.transitionComponent !== 'Proveedor Cta/Cte') {
+                    self.transitionComponent = 'Proveedor Cta/Cte';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();
