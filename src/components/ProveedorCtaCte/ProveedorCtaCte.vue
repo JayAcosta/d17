@@ -281,14 +281,6 @@
                         >
                             Agregar Giro
                         </v-btn>
-                        <!-- <v-btn
-                            outline
-                            color="orange"
-                            class="white--text"
-                            @click.native="initializeData"
-                        >
-                            Limpiar Campos
-                        </v-btn> -->
                     </v-layout>
                 </v-container>
                 
@@ -355,7 +347,7 @@ export default {
             tableItems: [],
             headers: [
                 {
-                    text: "Operaciones",
+                    text: "OPERACIONES",
                     sortable: false
                 }, {
                     text: "FECHA",
@@ -454,7 +446,12 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
             
         },
@@ -530,6 +527,9 @@ export default {
                             self.message.success = false;
                             self.message.content = validationErr.nFactura[0];
                         }
+                } else if(err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     self.message.success = err.response.data.success;
                     self.message.content = err.response.data.content;
@@ -560,7 +560,12 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         changeCantXPrecio() {
@@ -689,7 +694,7 @@ export default {
         },
         seeDetail(item) {
             let self = this;
-            // console.log(item.AID);
+
             axios({
                 method: "GET",
                 url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.MOV+"/"+item.AID+CONFIG.SERVICE_URL.DET,
@@ -703,22 +708,20 @@ export default {
                     self.total = success.data.rows[i].TTL;
                     self.detailDate = success.data.rows[i].FEC_MOV;
                     self.itemsStr = success.data.rows[i].ITE_DET;
-                    // self.timeslots.push(success.data.rows[i]);
-                    
-                    // self.balance = success.data.rows[i].SAL_PRO;
-                    // self.balanceAnterior = success.data.rows[i].SAL_PRO;
-                
                 }
 
-    
                 self.seeDate = true;
                 self.disabled = true;
                 self.dialog = !self.dialog;
                 self.timeslots = JSON.parse(self.itemsStr);
-                // console.log(self.timeslots)
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         closeDetail() {

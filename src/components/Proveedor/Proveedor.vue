@@ -371,8 +371,6 @@ export default {
     methods: {
         processFile(event) {
             this.foto = event.target.files[0];
-
-				// console.log(this.foto);
 		},
         getIdTipoDocumento() {
             let self = this;
@@ -393,7 +391,10 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                }
             });
         },
         getProviders() {
@@ -410,11 +411,12 @@ export default {
                     self.tableItems.push(success.data.rows[i]);
                 
                 }
-
-                // console.log(self.tableItems);
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                }
             });
         },
         changedValue: function(selected) {
@@ -552,6 +554,9 @@ export default {
 
                         }
                     }
+                } else if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     console.log(err);
                 }
@@ -592,7 +597,12 @@ export default {
                     self.getProviders();
                 })
                 .catch(error => {
-                    console.log(error);
+                    if (error.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(error);
+                    }
                 });
             } else {
                 return false;
@@ -614,7 +624,7 @@ export default {
                 self.showNDocument = true;
                 self.mask = '##.###.###';
             }
-            // self.showNDocument = true;
+
             self.getIdTipoDocumento();
             self.id = props.ID,
             self.selectTipoDocumento = props.TIP_DOC_DES;
@@ -713,6 +723,9 @@ export default {
                             self.message.content = validationErr.observacion[0];
                         }
                     }
+                } else if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     console.log(err);
                 }
@@ -749,7 +762,12 @@ export default {
 
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         openDialogList() {
@@ -811,7 +829,12 @@ export default {
 
              })
              .catch(err => {
-                 console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
              });
         },
         showSeal(props) {
@@ -839,7 +862,12 @@ export default {
                     self.closeDialogImage();
                 })
                 .catch(err => {
-                    console.log(err);
+                    if (err.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(err);
+                    }
                 });
             } else {
                 return false;
@@ -890,6 +918,9 @@ export default {
                         }
 
                     }
+                } else if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     console.log(err);
                 }
@@ -922,7 +953,12 @@ export default {
                     self.refreshTable();
                 })
                 .catch(err => {
-                    console.log(err);
+                    if (err.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(err);
+                    }
                 })
             } else {
                 return false;

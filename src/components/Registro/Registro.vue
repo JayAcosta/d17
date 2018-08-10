@@ -295,6 +295,9 @@ export default {
                         
                     }
                 }
+            } else if (err.response.status === 401) {
+              self.$localStorage.remove('session');
+              self.$router.push({path: '/'});
             } else {
                 console.log(err);
             }

@@ -1,10 +1,156 @@
 <template>
     <v-app light>
         <v-container fluid>
+            <v-dialog v-model="dialog" max-width="800px" persistent>
+                <v-card>
+                    <v-card-title>
+                        <span class="headline">Detalle del Giro</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <template v-for="slot in timeslots">
+                            <v-container grid-list-md>
+                                <v-layout row wrap>
+                                    <v-flex xs12 sm2 md2>
+                                        <v-text-field
+                                            label="Cantidad"
+                                            outline
+                                            v-model="slot.cant"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-flex>
+                                    <v-flex xs12 sm6 md6>
+                                        <v-text-field
+                                            label="Descripción"
+                                            outline
+                                            v-model="slot.descrip"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-flex>
+                                    <v-flex xs12 sm2 md2>
+                                        <v-text-field
+                                            label="Precio"
+                                            outline
+                                            v-model="slot.price"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-flex>
+                                    <v-flex xs12 sm2 md2>
+                                        <v-text-field
+                                            label="Subtotal"
+                                            outline
+                                            v-model="slot.subtotal"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </template>
+                        <v-container v-if="seeDate === false" grid-list-md>
+                            <v-layout row wrap>
+                                <v-flex xs12 sm2 md2>
+                                    <v-text-field
+                                        type="number"
+                                        label="Cant"
+                                        v-model="cant"
+                                        min="1" 
+                                        required
+                                    ></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md6>
+                                    <v-text-field
+                                        label="Descripción"
+                                        v-model="descripGiro"
+                                        required
+                                    ></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm2 md2>
+                                    <v-text-field
+                                        type="number"
+                                        label="Precio"
+                                        min="0"
+                                        v-model="price"
+                                        @change="changeCantXPrecio"
+                                        required
+                                    ></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm2 md2>
+                                    <v-text-field
+                                        type="number"
+                                        label="Subtotal"
+                                        v-model="subtotal"
+                                        readonly
+                                    ></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                        <v-container v-if="addItemGiro === true">
+                            <v-btn dark large fab color="primary" v-on:click="addAnother">
+                                <v-icon>add</v-icon>
+                            </v-btn>
+                        </v-container>
+                        <v-container v-else>
+
+                        </v-container>
+                        <v-container grid-list-md>
+                        <v-layout row wrap>
+                            <v-flex v-if="seeDate === false" xs12 sm2 md8>
+                                <v-radio-group v-model="radios" row>
+                                    <v-radio label="Pago" value="pago"></v-radio>
+                                    <v-radio label="Deuda" value="deuda"></v-radio>
+                                </v-radio-group>
+                            </v-flex>
+                            <v-flex v-else-if="seeDate === true" xs12 sm2 md8>
+                                <v-text-field
+                                    label="Fecha"
+                                    v-model="detailDate"
+                                    outline
+                                    readonly
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm2 md2>
+                                <v-text-field
+                                    label="N# factura"
+                                    v-model="nFactura"
+                                    outline
+                                    :readonly="disabled"
+                                    required
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm2 md2>
+                                <v-text-field
+                                    label="Total"
+                                    v-model="total"
+                                    outline
+                                    readonly
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                        </v-container>
+                    </v-card-text>
+                <v-card-actions v-if="seeDate === false">
+                    <v-container v-if="okGiro === true">
+                        <v-flex class="text-md-right text-xs-right">
+							<v-btn color="blue darken-1" flat v-on:click="saveDetail" >OK</v-btn>
+							<v-btn color="red darken-1" flat @click.native="cancelDetail">Cancelar</v-btn>
+                        </v-flex>
+                    </v-container>
+                    <v-container v-else-if="okGiro === false">
+                    <v-flex class="text-md-right text-xs-right">
+                        <v-btn color="red darken-1" flat @click.native="cancelDetail">Cancelar</v-btn>
+                    </v-flex>
+                    </v-container>
+                </v-card-actions>
+                <v-card-actions v-else-if="seeDate === true">
+                    <v-flex class="text-md-right text-xs-right">
+                        <v-btn color="red darken-1" flat @click.native="closeDetail">Cancelar</v-btn>
+                    </v-flex>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
             <v-card>
                 <v-card-title primary-title>
                     <v-flex class="text-md-center text-xs-center">
-                        <span class="headline">Cuenta corriente</span>
+                        <span class="headline">Cuenta Corriente Cliente</span>
                     </v-flex>
                 </v-card-title>
                 <v-card-text>
@@ -46,7 +192,13 @@
                         hide-actions
                     >
                     <template slot="items" slot-scope="props">
+                        <td class="justify-center layout px-0">
+                            <v-btn icon class="mx-0" @click="seeDetail(props.item)">
+                                <v-icon color="blue">more</v-icon>
+                            </v-btn>
+                        </td>
                         <td class="text-xs-center text-md-center">{{ props.item.FEC_MOV }}</td>
+                        <td class="text-xs-center text-md-center">{{ props.item.N_FAC }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.DES_GIR }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.DEU_CLI }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.MON_GIR }}</td>
@@ -86,6 +238,7 @@
                                 step="0.01"
                                 min="0"
                                 prefix="$"
+                                readonly
                             ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm2 md2>
@@ -98,6 +251,7 @@
                                 step="0.01"
                                 min="0"
                                 prefix="$"
+                                readonly
                             ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm2 md2>
@@ -112,19 +266,19 @@
                         </v-flex>
                         <v-btn
                             outline
+                            color="green"
+                            class="white--text"
+                            @click.native="addDetail"
+                        >
+                            Agregar Detalle
+                        </v-btn>
+                        <v-btn
+                            outline
                             color="indigo"
                             class="white--text"
                             @click.native="addNewGiro"
                         >
                             Agregar Giro
-                        </v-btn>
-                        <v-btn
-                            outline
-                            color="orange"
-                            class="white--text"
-                            @click.native="initializeData"
-                        >
-                            Limpiar Campos
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -166,11 +320,10 @@ export default {
         } else {
             this.minDate = moment(new Date()).format("DD/MM/YYYY");
             this.token = savedSession.token;
-            this.fillSelectClients();
-            
+            this.fillSelectProviders();
         }
     },
-    name: "CtaCte",
+    name: "ProveedorCtaCte",
     data() {
         return {
             id: 0,
@@ -193,10 +346,17 @@ export default {
             tableItems: [],
             headers: [
                 {
+                    text: "OPERACIONES",
+                    sortable: false
+                }, {
                     text: "FECHA",
                     value: "FEC_MOV",
                     sortable: false
                 }, {
+                    text: "N# FACTURA",
+                    value: "N_FAC",
+                    sortable: false
+                },{
                     text: "DESCRIPCIÓN",
                     value: "DES_GIR",
                     sortable: false
@@ -224,11 +384,46 @@ export default {
             balance: 0,
             balanceAnterior: 0,
             total: 0,
-            descrip: ""
+            descrip: "",
+            dialog: false,
+            timeslots: [],
+            cant: 0,
+            price: 0,
+            descripGiro: "",
+            subtotal: 0,
+            addItemGiro: false,
+            okGiro: false,
+            radios: "pago",
+            nFactura: "",
+            seeDate: false,
+            detailDate: "",
+            itemsStr: "",
+            disabled: false
+
         }
     },
     methods: {
-        fillSelectClients() {
+        addAnother: function() {
+            let self = this;
+            
+            self.timeslots.push({
+                cant: self.cant,
+                descrip: self.descripGiro,
+                price: self.price,
+                subtotal: self.subtotal
+            });
+
+            self.total = (parseFloat(self.total) + parseFloat(self.subtotal));
+
+            self.okGiro = true;
+            self.cant = 0;
+            self.descripGiro = "";
+            self.price = 0;
+            self.subtotal = 0;
+
+            self.addItemGiro = false;
+    },
+        fillSelectProviders() {
             let self = this;
 
             axios({
@@ -250,7 +445,12 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
             
         },
@@ -268,12 +468,10 @@ export default {
                 self.getAccountMovement();
             }
         },
-        addNewAccount() {
-            console.log('hola');
-        },
         addNewGiro() {
             let self = this;
-            let conf = confirm("Esta seguro de agregar este giro?");
+            
+            let conf = confirm("Esta seguro de agregar este Giro");
             
             if (conf === true) {
                 axios({
@@ -287,27 +485,63 @@ export default {
                         ingreso: self.ingreso,
                         pago: self.pago,
                         saldo: self.balance,
-                        fecha: self.minDate
+                        fecha: self.minDate,
+                        detalle: JSON.stringify(self.timeslots),
+                        total: self.total,
+                        nFactura: self.nFactura
                     }
                 })
                 .then(success => {
                     let response = success.data;
+                    
                     self.handleSnackbar(response.success, response.content);
                     self.tableItems = [];
-                    self.getAccountMovement();
+                    self.timeslots = [];
+                    self.nFactura = "";
+                    self.total = 0;
                     self.initializeData();
-                    
+                    self.getAccountMovement();
                 })
                 .catch(err => {
-                    console.log(err);
-                });   
+                    let validationErr = err.response.data.errors;
+                    
+                    if (err.response.status === 400) {
+                        if (validationErr.descripcion) {
+                            self.message.success = false;
+                            self.message.content = validationErr.descripcion[0];
+                        }
+                        if (validationErr.ingreso) {
+                            self.message.success = false;
+                            self.message.content = validationErr.ingreso[0];
+                        }
+                        if (validationErr.pago) {
+                            self.message.success = false;
+                            self.message.content = validationErr.pago[0];
+                        }
+                        if (validationErr.saldo) {
+                            self.message.success = false;
+                            self.message.content = validationErr.saldo[0];
+                        }
+                        if (validationErr.nFactura) {
+                            self.message.success = false;
+                            self.message.content = validationErr.nFactura[0];
+                        }
+                } else if(err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    self.message.success = err.response.data.success;
+                    self.message.content = err.response.data.content;
+                }
+                self.handleSnackbar(self.message.success, self.message.content);
+                });
             } else {
                 return false;
             }
         },
         getAccountMovement() {
             let self = this;
-
+            
             axios({
                 method: "GET",
                 url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CLIENT+"/"+self.id+CONFIG.SERVICE_URL.ACCOUNT,
@@ -318,14 +552,30 @@ export default {
             .then(success => {
                 for (let i = 0; i < success.data.rows.length; i++) {
                     self.tableItems.push(success.data.rows[i]);
+                    
                     self.balance = success.data.rows[i].SAL;
                     self.balanceAnterior = success.data.rows[i].SAL;
                 
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
+        },
+        changeCantXPrecio() {
+            let self = this;
+
+            self.subtotal = (parseFloat(self.price) * parseFloat(self.cant));
+
+            if (self.subtotal !== 0) {
+                self.addItemGiro = true;
+            }
+            
         },
         changePago() {
             let self = this;
@@ -372,8 +622,116 @@ export default {
                 self.snackbar = false;
             }, 3000);
         },
-    }
+        saveDetail() {
+            let self = this;
 
+            let conf = confirm("Esta seguro de salvar este Detalle?");
+
+            if (conf === true) {
+                if (self.radios === "pago") {
+                    self.pago = self.total;
+                    self.dialog = !self.dialog;
+
+                    self.balance = self.balanceAnterior;
+                    self.disableIngreso = true;
+
+                    self.balance = (parseFloat(self.balance) - parseFloat(self.pago));
+
+                    if (self.pago == 0) {
+                        self.balance = self.balanceAnterior;
+                        self.disableIngreso = false;
+                    }
+                } else if (self.radios === "deuda") {
+                    self.ingreso = self.total;
+                    self.dialog = !self.dialog;
+                    
+                    self.balance = self.balanceAnterior;
+                    self.disablePago = true;
+                    
+                    self.balance = (parseFloat(self.balance) + parseFloat(self.ingreso));
+                    
+                    if (self.ingreso == 0) {
+                        self.balance = self.balanceAnterior;
+                        self.disablePago = false;
+                    }
+                    
+                }
+            } else {
+                return false;
+            }
+        },
+        cancelDetail() {
+            let self = this;
+
+            let conf = confirm("Esta seguro de cancelar Detalle?");
+
+            if (conf === true) {
+                self.dialog = !self.dialog;
+                self.ingreso = 0;
+                self.pago = 0;
+                self.descrip = "";
+
+                setTimeout(function() {
+                    self.timeslots = [];
+                    self.total = 0;
+                    self.radios = "pago";
+                    self.okGiro = false;
+                }, 1000);
+            } else {
+                return false;
+            }
+        },
+        addDetail() {
+            let self = this;
+
+            self.dialog = !self.dialog;
+            setTimeout(() => {
+                self.ingreso = 0;
+                self.pago = 0;
+                self.balance = 0;
+            }, 1500);
+        },
+        seeDetail(item) {
+            let self = this;
+
+            axios({
+                method: "GET",
+                url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CLIENT+ CONFIG.SERVICE_URL.MOV+"/"+item.AID+CONFIG.SERVICE_URL.DET,
+                headers: {
+                    "Authorization": "Bearer " + self.token
+                }
+            })
+            .then(success => {
+                for (let i = 0; i < success.data.rows.length; i++) {
+                    self.nFactura = success.data.rows[i].N_FAC;
+                    self.total = success.data.rows[i].TTL;
+                    self.detailDate = success.data.rows[i].FEC_MOV;
+                    self.itemsStr = success.data.rows[i].ITE_DET;
+                }
+
+                self.seeDate = true;
+                self.disabled = true;
+                self.dialog = !self.dialog;
+                self.timeslots = JSON.parse(self.itemsStr);
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
+            });
+        },
+        closeDetail() {
+            this.dialog = !this.dialog;
+            this.seeDate = false;
+            this.disabled = false;
+            this.timeslots = [];
+            this.nFactura = "";
+            this.total = 0;
+        }
+    }
 }
 </script>
 

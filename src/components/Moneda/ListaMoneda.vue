@@ -170,7 +170,12 @@ export default {
                 }
             })
             .catch(error => {
-                console.log(error);
+                if (error.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(error);
+                }
             });
             
         },
@@ -197,7 +202,12 @@ export default {
                 
             })
             .catch(error => {
-                console.log(error);
+                if (error.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(error);
+                }
             });
         },
         handleSnackbar(success, content) {

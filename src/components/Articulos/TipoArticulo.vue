@@ -120,6 +120,9 @@ export default {
             } else if (error.response.status === 409) {
                 self.message.success = error.response.data.success;
                 self.message.content = error.response.data.content;
+            } else if (error.response.status === 401) {
+              self.$localStorage.remove('session');
+              self.$router.push({path: '/'});
             } else {
               console.log(error);
             }

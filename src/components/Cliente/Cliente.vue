@@ -330,11 +330,14 @@ export default {
                     self.tableItems.push(success.data.rows[i]);
                     
                 }
-
-                // console.log(self.tableItems);
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         getIdTipoDocumento() {
@@ -357,14 +360,18 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         changedValue: function(selected) {
             let self = this;
             self.idTipoDocumento = selected.id;
             
-            //console.log(selected);
             if (selected.state === 'CUIL') {
                 self.showNDocument = true;
                 self.mask = '##-########-#';
@@ -467,6 +474,9 @@ export default {
 
                         }
                     }
+                } else if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});    
                 } else {
                     console.log(err);
                 }
@@ -604,6 +614,9 @@ export default {
 
                         }
                     }
+                } else if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     console.log(err);
                 }
@@ -626,7 +639,7 @@ export default {
                 self.showNDocument = true;
                 self.mask = '##.###.###';
             }
-            // self.showNDocument = true;
+
             self.getIdTipoDocumento();
             self.id = item.ID,
             self.selectTipoDocumento = item.TIP_DOC_DES;
@@ -666,7 +679,12 @@ export default {
                     self.getClients();
                 })
                 .catch(err => {
-                    console.log(err);
+                    if (err.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(err);
+                    }
                 });
 
             } else {
@@ -721,7 +739,12 @@ export default {
                     self.getClients();
                 })
                 .catch(err => {
-                    console.log(err);
+                    if (err.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(err);
+                    }
                 });
             } else {
                 return false;
@@ -750,7 +773,12 @@ export default {
                 }
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         refreshTable() {

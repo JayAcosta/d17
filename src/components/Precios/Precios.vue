@@ -179,8 +179,6 @@ export default {
             } else {
                 this.token = savedSession.token;
                 this.getArticlesAndPrices();
-                // this.getAllArticulos();
-				// this.getTiposArticulos();
 			}
 		},
     name: "Precios",
@@ -258,11 +256,14 @@ export default {
                  for (let i = 0; i < success.data.rows.length; i++) {
                      self.desserts.push(success.data.rows[i]);
                     }
-
-                    // console.log(self.desserts);
              })
              .catch(err => {
-                 console.log(err);
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
             });
         },
         openDialog(item) {
@@ -278,7 +279,6 @@ export default {
             self.minor = (item.PRECIO_X_MENOR !== null) ? (item.PRECIO_X_MENOR.substring(1)) : 0;
             self.distributor = (item.distribuidor !== null) ? (item.distribuidor) : 0;
             self.especial = (item.especial !== null) ? (item.especial) : 0;
-            // self.cotizacion = item.CAMBIO_DOLAR;
             self.dateArticle = moment(item.fecha_creacion).format('DD/MM/YYYY');
 
             self.getCurrencyPrice()
@@ -321,6 +321,9 @@ export default {
                         self.message.success = false;
                         self.message.content = validationErr.precioMenor[0];
                     }
+                } else if (error.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
                 } else {
                     self.message.success = error.response.data.success;
                     self.message.content = error.response.data.content;
@@ -356,11 +359,12 @@ export default {
                     self.itemsCurrency.push({ id: success.data.rows[i].ID, state: success.data.rows[i].DESCRIPTION, value: success.data.rows[i].EXCHANGE });
                     
                 }
-
-                // console.log(self.itemsCurrency);
             })
             .catch(error => {
-                console.log(error);
+                if (error.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                }
             });
         },
         changedValue: function(selected) {
@@ -376,9 +380,6 @@ export default {
             }
             
             this.cotizacion = total;
-            console.log(this.cotizacion);
-
-            
         },
     }
 }

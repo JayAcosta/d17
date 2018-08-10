@@ -443,7 +443,6 @@ export default {
 			} else {
 				this.token = savedSession.token;
 				this.getAllArticulos();
-				// this.getTiposArticulos();
 			}
 		},
 	name: "ListaArticulos",
@@ -552,8 +551,12 @@ export default {
 						}
 					})
 					.catch(err => {
-						console.log(err);
-
+						if (err.response.status === 401) {
+							self.$localStorage.remove('session');
+							self.$router.push({path: '/'});
+						} else {
+							console.log(err);
+						}
 					});
 			},
 			getAllArticulos() {
@@ -575,8 +578,12 @@ export default {
 
 				})
 				.catch(err => {
-					console.log(err);
-
+					if (err.response.status === 401) {
+						self.$localStorage.remove('session');
+						self.$router.push({path: '/'});
+					} else {
+						console.log(err);
+					}
 				});
 			},
 			dialogEventOpen() {
@@ -647,11 +654,13 @@ export default {
 					}
 				})
 				.catch(err => {
-					console.log(err);
+					if (err.response.status === 401) {
+						self.$localStorage.remove('session');
+						self.$router.push({path: '/'});
+					} else {
+						console.log(err);
+					}
 				});
-
-				// self.barcodeExist = true;
-				// console.log('hola');
 			},
 			showImage() {
 				let self = this;
@@ -715,17 +724,19 @@ export default {
 
 
 					}
-					console.log(success);
 				})
 				.catch(err => {
-					console.log(err);
+					if (err.response.status === 401) {
+						self.$localStorage.remove('session');
+						self.$router.push({path: '/'});
+					} else {
+						console.log(err);
+					}
 				});
 
 			},
 			processFile(event) {
 				this.foto = event.target.files[0];
-
-				// console.log(this.foto);
 			},
 			handleSnackbar(success, content) {
 			let self = this;
@@ -780,7 +791,12 @@ export default {
 						self.handleSnackbar(response.success, response.content);
 					})
 					.catch(err => {
-						console.log(err);
+						if (err.response.status === 401) {
+							self.$localStorage.remove('session');
+							self.$router.push({path: '/'});
+						} else {
+							console.log(err);
+						}
 					});
 				} else {
 					return false;
@@ -835,16 +851,18 @@ export default {
 						self.handleSnackbar(response.success, response.content);
 
 					}
-
-					console.log(success);
 				})
 				.catch(err => {
-					console.log(err);
+					if (err.response.status === 401) {
+						self.$localStorage.remove('session');
+						self.$router.push({path: '/'});
+					} else {
+						console.log(err);
+					}
 				});
 			},
 			calculatePriceUSD() {
 				this.costoUSD = (this.costo / this.cotizacion);
-				// console.log(this.costo / this.cotizacion);
 			}
 
 		}
