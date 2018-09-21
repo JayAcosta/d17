@@ -41,7 +41,13 @@ const CONFIG = {
         "ACCOUNT": "/account",
         "MOV": "/movement",
         "FILLPROVIDER": "/provider/fill",
-        "DET": "/detail"
+        "DET": "/detail",
+        "BARCODEVERIFY": "/barcode-verify",
+        "SALE": "/sale",
+        "GETSALES": "/get-sales",
+        "GETBANKS": "/get-banks",
+        "CHARGE": "/charge",
+        "INVOICE": "/invoice"
     }
 };
 

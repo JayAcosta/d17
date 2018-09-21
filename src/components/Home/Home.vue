@@ -59,6 +59,15 @@
                 <div v-else-if="transitionComponent === 'Proveedor Cta/Cte'">
                     <proveedor-cuenta-corriente />
                 </div>
+                <div v-else-if="transitionComponent === 'Ventas'">
+                    <lista-ventas />
+                </div>
+                <div v-else-if="transitionComponent === 'Facturas'">
+                    <lista-facturas />
+                </div>
+                <div v-else-if="transitionComponent === 'Cobros'">
+                    <lista-cobros />
+                </div>
             </v-layout>
         </v-container>
     
@@ -110,6 +119,10 @@ import Cliente from "@/components/Cliente/Cliente";
 import Proveedor from "@/components/Proveedor/Proveedor";
 import CtaCte from "@/components/CtaCte/CtaCte";
 import ProveedorCtaCte from "@/components/ProveedorCtaCte/ProveedorCtaCte";
+import Ventas from "@/components/Ventas/Ventas";
+import Facturas from "@/components/Facturas/Facturas";
+import Cobros from "@/components/Cobros/Cobros";
+
 // Config
 import { 
     CONFIG
@@ -123,7 +136,10 @@ export default {
         'lista-clientes': Cliente,
         'lista-proveedores': Proveedor,
         'cuenta-corriente': CtaCte,
-        'proveedor-cuenta-corriente': ProveedorCtaCte
+        'proveedor-cuenta-corriente': ProveedorCtaCte,
+        'lista-ventas': Ventas,
+        'lista-facturas': Facturas,
+        'lista-cobros': Cobros
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -184,6 +200,15 @@ export default {
                 }, {
                     title: 'Proveedor Cta/Cte',
                     icon: 'bar_chart'
+                },{
+                    title: 'Ventas',
+                    icon: 'add_shopping_cart'
+                },{
+                    title: 'Facturas',
+                    icon: 'note'
+                },{
+                    title: 'Cobros',
+                    icon: 'payment'
                 }
             ],
             message: {
@@ -256,6 +281,24 @@ export default {
             } else if (option === 'Proveedor Cta/Cte') {
                 if (self.transitionComponent !== 'Proveedor Cta/Cte') {
                     self.transitionComponent = 'Proveedor Cta/Cte';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Ventas') {
+                if (self.transitionComponent !== 'Ventas') {
+                    self.transitionComponent = 'Ventas';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Facturas') {
+                if (self.transitionComponent !== 'Facturas') {
+                    self.transitionComponent = 'Facturas';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Cobros') {
+                if (self.transitionComponent !== 'Cobros') {
+                    self.transitionComponent = 'Cobros';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

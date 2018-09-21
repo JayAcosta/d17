@@ -99,7 +99,7 @@
                                     <v-radio label="Deuda" value="deuda"></v-radio>
                                 </v-radio-group>
                             </v-flex>
-                            <v-flex v-else-if="seeDate === true" xs12 sm2 md8>
+                            <v-flex v-else-if="seeDate === true" xs12 sm2 md3>
                                 <v-text-field
                                     label="Fecha"
                                     v-model="detailDate"
@@ -107,7 +107,7 @@
                                     readonly
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm2 md2>
+                            <v-flex xs12 sm2 md3>
                                 <v-text-field
                                     label="N# factura"
                                     v-model="nFactura"
@@ -116,10 +116,18 @@
                                     required
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm2 md2>
+                            <v-flex xs12 sm2 md3>
                                 <v-text-field
                                     label="Total"
                                     v-model="total"
+                                    outline
+                                    readonly
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex v-if="seeDate === true" xs12 sm2 md3>
+                                <v-text-field
+                                    label="Abonado"
+                                    v-model="pagado"
                                     outline
                                     readonly
                                 ></v-text-field>
@@ -142,7 +150,7 @@
                 </v-card-actions>
                 <v-card-actions v-else-if="seeDate === true">
                     <v-flex class="text-md-right text-xs-right">
-                        <v-btn color="red darken-1" flat @click.native="closeDetail">Cancelar</v-btn>
+                        <v-btn color="blue darken-1" dark @click.native="closeDetail">Ok</v-btn>
                     </v-flex>
                 </v-card-actions>
             </v-card>
@@ -398,7 +406,9 @@ export default {
             seeDate: false,
             detailDate: "",
             itemsStr: "",
-            disabled: false
+            disabled: false,
+            pagado: 0,
+            idArr: []
 
         }
     },
@@ -552,6 +562,11 @@ export default {
             .then(success => {
                 for (let i = 0; i < success.data.rows.length; i++) {
                     self.tableItems.push(success.data.rows[i]);
+
+                    self.idArr.push({
+                        id: success.data.rows[i].BID,
+                        saldo: parseFloat(success.data.rows[i].SAL)
+                    });
                     
                     self.balance = success.data.rows[i].SAL;
                     self.balanceAnterior = success.data.rows[i].SAL;
@@ -691,12 +706,20 @@ export default {
                 self.balance = 0;
             }, 1500);
         },
+        sumTotal(obj) {
+            let total = JSON.parse(obj);
+            let sum = 0;
+
+            sum = sum + parseFloat(total.cash) + parseFloat(total.debit) + parseFloat(total.check);
+
+            return sum;
+        },
         seeDetail(item) {
             let self = this;
 
             axios({
                 method: "GET",
-                url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CLIENT+ CONFIG.SERVICE_URL.MOV+"/"+item.AID+CONFIG.SERVICE_URL.DET,
+                url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CLIENT+ CONFIG.SERVICE_URL.MOV+"/"+item.BID+CONFIG.SERVICE_URL.DET+CONFIG.SERVICE_URL.INVOICE+"/"+item.N_FAC,
                 headers: {
                     "Authorization": "Bearer " + self.token
                 }
@@ -707,6 +730,7 @@ export default {
                     self.total = success.data.rows[i].TTL;
                     self.detailDate = success.data.rows[i].FEC_MOV;
                     self.itemsStr = success.data.rows[i].ITE_DET;
+                    self.pagado = self.sumTotal(success.data.rows[i].PAG);
                 }
 
                 self.seeDate = true;
@@ -724,12 +748,17 @@ export default {
             });
         },
         closeDetail() {
-            this.dialog = !this.dialog;
-            this.seeDate = false;
-            this.disabled = false;
-            this.timeslots = [];
-            this.nFactura = "";
-            this.total = 0;
+            let self = this;
+            
+            setTimeout(function(){ 
+                self.seeDate = false;
+                self.disabled = false;
+                self.timeslots = [];
+                self.nFactura = "";
+                self.total = 0;
+             }, 500);
+             
+            self.dialog = !self.dialog;
         }
     }
 }
