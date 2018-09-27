@@ -47,7 +47,10 @@ const CONFIG = {
         "GETSALES": "/get-sales",
         "GETBANKS": "/get-banks",
         "CHARGE": "/charge",
-        "INVOICE": "/invoice"
+        "INVOICE": "/invoice",
+        "EXPORT": "/export",
+        "IMPORT": "/import",
+        "ARTICLE": "/article"
     }
 };
 
