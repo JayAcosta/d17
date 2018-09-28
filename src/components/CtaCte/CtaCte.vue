@@ -450,7 +450,7 @@ export default {
                         idb: success.data.rows[i].IDB,
                         idc: success.data.rows[i].IDC,
                         nDoc: success.data.rows[i].N_DOC,
-                        clientName: success.data.rows[i].NOM,
+                        clientName: success.data.rows[i].NOM_ZON,
                     });
                 }
             })

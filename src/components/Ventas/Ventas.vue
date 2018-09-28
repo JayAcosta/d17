@@ -469,7 +469,9 @@ export default {
                 
                 if (err.response.status === 400) {
                     if (validationErr.barcode) {
-
+                        self.message.success = self.message.success;
+                        self.message.content = customErr.content;
+                        self.barcode = "";
                     }
                 } else if(err.response.status === 401) {
                     self.$localStorage.remove('session');
@@ -674,7 +676,7 @@ export default {
                         idb: success.data.rows[i].IDB,
                         idc: success.data.rows[i].IDC,
                         nDoc: success.data.rows[i].N_DOC,
-                        clientName: success.data.rows[i].NOM,
+                        clientName: success.data.rows[i].NOM_ZON,
                         clientDir:  success.data.rows[i].DIR,
                         clientPhone: success.data.rows[i].TEL,
                         clientObs: success.data.rows[i].OBS

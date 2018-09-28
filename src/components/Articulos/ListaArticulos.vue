@@ -15,6 +15,7 @@
 						<v-form v-on:submit.prevent="articleVerify">
 							<v-layout row wrap>
 								<v-text-field
+									id="barcode"
 									label="PREFIJO||COLOR||MARCA||MODELO||CALIDAD"
 									v-model="verifyBarcode"
 									required
@@ -35,7 +36,7 @@
 						<v-container v-if="barcodeExist === true" fluid class="px-3">
 							<v-form>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsTiposArticulos"
 										v-model="selectTiposArticulos"
 										:hint="`Selecionado: ${selectTiposArticulos.state}`"
@@ -44,9 +45,8 @@
 										item-text="state"
 										return-object
 										persistent-hint
-										autocomplete
 										:disabled="disbleField"
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
 									<v-text-field
@@ -69,7 +69,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsOrigen"
 										v-model="selectOrigen"
 										:hint="`Selecionado: ${selectOrigen.state}`"
@@ -79,8 +79,7 @@
 										:disabled="disbleField"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
 									<v-text-field
@@ -88,7 +87,6 @@
 										min="1"
 										step="0.01"
 										value="0.00"
-										placeholder="0.00"
 										label="Cotización Actual"
 										name="cotizacion"
 										v-model="cotizacion"
@@ -127,7 +125,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsSello"
 										v-model="selectSello"
 										:hint="`Selecionado: ${selectSello.state}`"
@@ -137,18 +135,16 @@
 										:disabled="disbleField"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
-									<v-text-field
+									<v-textarea
 										v-model="descripcion"
 										label="Descripcion"
 										name="descripcion"
-										multi-line
 										required
 										:disabled="disbleField"
-									></v-text-field>
+									></v-textarea>
 								</v-layout>
 								<v-layout row wrap v-if="editArticle === true">
 									<v-container class="text-xs-center text-md-center">
@@ -173,7 +169,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsCalidad"
 										v-model="selectCalidad"
 										:hint="`Selecionado: ${selectCalidad.state}`"
@@ -182,9 +178,8 @@
 										item-text="state"
 										return-object
 										persistent-hint
-										autocomplete
 										:disabled="disbleField"
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 							</v-form>
 							<!-- Existe -->
@@ -192,7 +187,7 @@
 							<v-container v-else-if="barcodeExist === false" fluid class="px-3">
 								<v-form enctype="multipart/form-data">
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsTiposArticulos"
 										v-model="selectTiposArticulos"
 										:hint="`Selecionado: ${selectTiposArticulos.state}`"
@@ -201,8 +196,7 @@
 										item-text="state"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
 									<v-text-field
@@ -225,7 +219,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsOrigen"
 										v-model="selectOrigen"
 										:hint="`Selecionado: ${selectOrigen.state}`"
@@ -235,8 +229,7 @@
 										:disabled="disbleField"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
 									<v-text-field
@@ -244,11 +237,9 @@
 										min="1"
 										step="0.01"
 										value="0.00"
-										placeholder="0.00"
 										label="Cotización Actual"
 										name="cotizacion"
 										v-model="cotizacion"
-										prefix="USD"
 										readonly
 									></v-text-field>
 								</v-layout>
@@ -284,7 +275,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsSello"
 										v-model="selectSello"
 										:hint="`Selecionado: ${selectSello.state}`"
@@ -294,18 +285,17 @@
 										:disabled="disbleField"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 								<v-layout row wrap>
-									<v-text-field
+									<v-textarea
 										v-model="descripcion"
 										label="Descripcion"
 										name="descripcion"
 										multi-line
 										required
 										:disabled="disbleField"
-									></v-text-field>
+									></v-textarea>
 								</v-layout>
 								<v-layout row wrap>
 									<v-container class="text-xs-center text-md-center">
@@ -322,7 +312,7 @@
 									></v-text-field>
 								</v-layout>
 								<v-layout row wrap>
-									<v-select
+									<v-autocomplete
 										:items="itemsCalidad"
 										v-model="selectCalidad"
 										:hint="`Selecionado: ${selectCalidad.state}`"
@@ -331,8 +321,7 @@
 										item-text="state"
 										return-object
 										persistent-hint
-										autocomplete
-									></v-select>
+									></v-autocomplete>
 								</v-layout>
 							</v-form>
 							<!-- Nuevo -->
@@ -676,19 +665,18 @@ export default {
 				let self = this;
 				self.dialog = true;
 				self.editArticle = false;
-				console.log(self.cotizacion);
 				
 			},
 			dialogEventClose() {
 				let self = this;
-				self.editArticle = false;
-				self.newArticle = false;
 				self.dialog = false;
 
 				setTimeout(function() {
+					self.editArticle = false;
+					self.newArticle = false;
 					self.verifyBarcode = '';
 					self.barcodeExist = '';
-				}, 600);
+				}, 500);
 
 			},
 			articleVerify() {
@@ -723,7 +711,6 @@ export default {
 						self.selectOrigen = { state: response.content.origen };
 
 					} else if (response.success === false) {
-						console.log('new');
 						self.newArticle = true;
 						self.disbleField = false;
 						self.getTiposArticulos();
@@ -740,6 +727,15 @@ export default {
 					}
 				})
 				.catch(err => {
+					if (err.response.status === 400) {
+						let errParse = err.response.data.errors;
+
+						if (errParse.barcode) {
+							self.handleSnackbar(false, errParse.barcode[0]);
+							document.getElementById("barcode").focus();
+
+						}
+					} 
 					if (err.response.status === 401) {
 						self.$localStorage.remove('session');
 						self.$router.push({path: '/'});
@@ -812,7 +808,58 @@ export default {
 					}
 				})
 				.catch(err => {
-					if (err.response.status === 401) {
+					if (err.response.status === 400) {
+						let errParse = err.response.data.errors;
+
+						if (errParse.barcode) {
+							self.handleSnackbar(false, errParse.barcode[0]);
+
+						}
+						if (errParse.tipoArticulo) {
+							self.handleSnackbar(false, errParse.tipoArticulo[0]);
+
+						}
+						if (errParse.nombre) {
+							self.handleSnackbar(false, errParse.nombre[0]);
+
+						}
+						if (errParse.cantidad) {
+							self.handleSnackbar(false, errParse.cantidad[0]);
+
+						}
+						if (errParse.costo) {
+							self.handleSnackbar(false, errParse.costo[0]);
+
+						}
+						if (errParse.costo_usd) {
+							self.handleSnackbar(false, errParse.costo_usd[0]);
+
+						}
+						if (errParse.sello) {
+							self.handleSnackbar(false, errParse.sello[0]);
+
+						}
+						if (errParse.descripcion) {
+							self.handleSnackbar(false, errParse.descripcion[0]);
+
+						}
+						if (errParse.foto_articulo) {
+							self.handleSnackbar(false, errParse.foto_articulo[0]);
+
+						}
+						if (errParse.color) {
+							self.handleSnackbar(false, errParse.color[0]);
+
+						}
+						if (errParse.calidad) {
+							self.handleSnackbar(false, errParse.calidad[0]);
+
+						}
+						if (errParse.origen) {
+							self.handleSnackbar(false, errParse.origen[0]);
+
+						}
+					} else if (err.response.status === 401) {
 						self.$localStorage.remove('session');
 						self.$router.push({path: '/'});
 					} else {
@@ -848,8 +895,8 @@ export default {
 				self.nombre = item.nombre;
 				self.cantidad = item.cantidad;
 				self.cotizacion = item.CAMBIO_DOLAR;
-				self.costo = item.costo.toFixed(2);
-				self.costoUSD = item.costo_usd.toFixed(2);
+				self.costo = (item.costo !== null) ? item.costo.toFixed(2) : 0;
+				self.costoUSD = (item.costo_usd !== null) ? item.costo_usd.toFixed(2) : 0;
 				self.selectSello = { state: item.sello };
 				self.descripcion = item.descripcion;
 				self.color = item.color;
@@ -939,11 +986,62 @@ export default {
 					}
 				})
 				.catch(err => {
-					if (err.response.status === 401) {
+					if (err.response.status === 400) {
+						let errParse = err.response.data.errors;
+
+						if (errParse.barcode) {
+							self.handleSnackbar(false, errParse.barcode[0]);
+
+						}
+						if (errParse.tipoArticulo) {
+							self.handleSnackbar(false, errParse.tipoArticulo[0]);
+
+						}
+						if (errParse.nombre) {
+							self.handleSnackbar(false, errParse.nombre[0]);
+
+						}
+						if (errParse.cantidad) {
+							self.handleSnackbar(false, errParse.cantidad[0]);
+
+						}
+						if (errParse.costo) {
+							self.handleSnackbar(false, errParse.costo[0]);
+
+						}
+						if (errParse.costo_usd) {
+							self.handleSnackbar(false, errParse.costo_usd[0]);
+
+						}
+						if (errParse.sello) {
+							self.handleSnackbar(false, errParse.sello[0]);
+
+						}
+						if (errParse.descripcion) {
+							self.handleSnackbar(false, errParse.descripcion[0]);
+
+						}
+						if (errParse.foto_articulo) {
+							self.handleSnackbar(false, errParse.foto_articulo[0]);
+
+						}
+						if (errParse.color) {
+							self.handleSnackbar(false, errParse.color[0]);
+
+						}
+						if (errParse.calidad) {
+							self.handleSnackbar(false, errParse.calidad[0]);
+
+						}
+						if (errParse.origen) {
+							self.handleSnackbar(false, errParse.origen[0]);
+
+						}
+					} else if (err.response.status === 401) {
 						self.$localStorage.remove('session');
 						self.$router.push({path: '/'});
 					} else {
-						console.log(err);
+						// console.log(err);
 					}
 				});
 			},
