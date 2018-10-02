@@ -180,7 +180,7 @@ export default {
               text: "Encargado Gral",
               value: 1
           }, {
-              text: "El papaupa",
+              text: "Admin",
               value: 0
           }
         ],

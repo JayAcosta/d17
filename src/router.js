@@ -6,7 +6,6 @@ import Login from '@/components/Login/Login';
 import Home from '@/components/Home/Home';
 import HomeSeller from '@/components/Home/HomeSeller';
 import HomeDebtCollector from "@/components/Home/HomeDebtCollector";
-import Registro from "@/components/Registro/Registro";
 // import PageNotFound from "@/components/PageNotFound/PageNotFound";
 
 Vue.use(Router);
@@ -25,9 +24,6 @@ export default new Router({
         }, {
             path: "/debt-collector",
             component: HomeDebtCollector
-        }, {
-            path: "/registro",
-            component: Registro
         }
   ]
 });
