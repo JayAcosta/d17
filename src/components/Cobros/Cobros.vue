@@ -541,6 +541,9 @@ export default {
         }
     },
     name: "Cobros",
+    props: {
+		right: Number
+	},
     data() {
         return {
             id: 0,

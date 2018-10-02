@@ -255,6 +255,9 @@ export default {
             }
         },
     name: "Cliente",
+    props: {
+		right: Number
+	},
     data(){
         return {
             id: 0,

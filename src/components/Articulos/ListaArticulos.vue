@@ -393,7 +393,7 @@
 				<v-card-title>
 				Lista de Articulos
 				<v-spacer></v-spacer>
-				<v-tooltip bottom>
+				<v-tooltip v-if="right == 0 || right == 1" bottom>
 					<v-btn
 						icon class="mx-0"
 						slot="activator"
@@ -402,10 +402,9 @@
 						<v-icon color="blue lighten-1">arrow_upward</v-icon>
 					</v-btn>
 				<span>Importar Excel</span>
-				<v-spacer></v-spacer>
 				</v-tooltip>
 				<v-form method="GET" :action="exportService">
-				<v-tooltip bottom>
+				<v-tooltip v-if="right == 0 || right == 1" bottom>
 					<v-btn
 						type="submit"
 						icon class="mx-0"
@@ -447,10 +446,10 @@
 					<td class="text-xs-center text-md-center">{{ props.item.calidad }}</td>
 					<td class="text-xs-center text-md-center">{{ props.item.color }}</td>
 					<td class="justify-center layout px-0">
-					<v-btn icon class="mx-0" @click="editItem(props.item)">
+					<v-btn icon v-if="right == 0 || right == 1" class="mx-0" @click="editItem(props.item)">
 						<v-icon color="teal">edit</v-icon>
 					</v-btn>
-					<v-btn icon class="mx-0" @click="deleteItem(props.item)">
+					<v-btn icon v-if="right == 0 || right == 1" class="mx-0" @click="deleteItem(props.item)">
 						<v-icon color="pink">delete</v-icon>
 					</v-btn>
 					<v-btn icon class="mx-0" @click="showImageGrid(props.item)">
@@ -471,6 +470,7 @@
                 bottom
                 right
                 fab
+				v-if="right == 0 || right == 1"
                 v-on:click="dialogEventOpen"
             >
                 <v-icon>add</v-icon>
@@ -511,10 +511,13 @@ export default {
 				this.token = savedSession.token;
 				this.exportService = CONFIG.SERVICE_BASE+CONFIG.SERVICE_URL.EXPORT+CONFIG.SERVICE_URL.ARTICLE;
 				this.getAllArticulos();
+
 			}
 		},
 	name: "ListaArticulos",
-	props: {},
+	props: {
+		right: Number
+	},
 	data() {
 		return {
 			id: '',
@@ -1064,7 +1067,7 @@ export default {
 							
 							for (let i = 0; i < data.Articulos.length; i++) {
 								
-									if (data.Articulos[i].COSTO) {
+									if (data.Articulos[i].ID && data.Articulos[i].NOMBRE && data.Articulos[i].BARCODE && data.Articulos[i].COSTO && data.Articulos[i].TIPO_ART && data.Articulos[i].COLOR && data.Articulos[i].CALIDAD && data.Articulos[i].CANTIDAD) {
 										self.jsonProcess.push(
 											{
 												ID: data.Articulos[i].ID,
@@ -1120,11 +1123,12 @@ export default {
 					self.handleSnackbar(response.success, response.content);
 					self.dialog2 = !self.dialog2;
 					self.swtCosto = false;
+					setTimeout(function() {
+                        self.isProcess = false;
+                        self.titleProcess = "Procesar"; 
+                        self.excelLoad = false;
+                        }, 500);
 					self.desserts = [];
-					self.isProcess = false;
-					self.titleProcess = "Procesar";
-					self.excelLoad = false;
-					
 					this.getAllArticulos();
 				})
 				.catch(err => {

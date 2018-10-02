@@ -2,7 +2,7 @@
 <v-app light>
     
     <!-- Toolbar -->
-    <v-toolbar dark color="primary">
+    <v-toolbar dark :color="colorNavBar">
         <v-toolbar-side-icon @click.stop="toggleDrawer()"></v-toolbar-side-icon>
         <v-toolbar-title class="white--text">{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -35,28 +35,28 @@
                 <div v-if="transitionComponent === 'Home'">
                     Welcome
                 </div>
-                <div v-else-if="transitionComponent === 'Articulos'">
-                    <lista-articulos />
+                <div v-else-if="transitionComponent === 'Artículos'">
+                    <lista-articulos :right="rightNumber" />
                 </div>
                 <div v-else-if="transitionComponent === 'Perfil'">
                     aqui perfil
                 </div>
                 <div v-else-if="transitionComponent === 'Precios'">
-                    <lista-precios />
+                    <lista-precios :right="rightNumber" />
                 </div>
-                <div v-else-if="transitionComponent === 'Cotizacion'">
+                <div v-else-if="transitionComponent === 'Cotización'">
                     <lista-moneda />
                 </div>
                 <div v-else-if="transitionComponent === 'Clientes'">
-                    <lista-clientes />
+                    <lista-clientes :right="rightNumber" />
                 </div>
                 <div v-else-if="transitionComponent === 'Proveedor'">
                     <lista-proveedores />
                 </div>
-                <div v-else-if="transitionComponent === 'Cta/Cte'">
+                <div v-else-if="transitionComponent === 'CTA/CTE CLI'">
                     <cuenta-corriente />
                 </div>
-                <div v-else-if="transitionComponent === 'Proveedor Cta/Cte'">
+                <div v-else-if="transitionComponent === 'CTA/CTE PROV'">
                     <proveedor-cuenta-corriente />
                 </div>
                 <div v-else-if="transitionComponent === 'Ventas'">
@@ -154,9 +154,8 @@ export default {
             this.fullname = savedSession.user.nombres + ' ' + savedSession.user.apellido;
             this.firstnameLetter = savedSession.user.nombres.charAt(0);
             this.token = savedSession.token;
-            this.transitionComponent = (this.$localStorage.get('componentActive') !== undefined)
-                            ?
-                            this.$localStorage.get('componentActive') : '';
+            this.transitionComponent = (this.$localStorage.get('componentActive') !== undefined) ? this.$localStorage.get('componentActive') : '';
+            this.loadModules();
         }
     },
     name: "Home",
@@ -172,56 +171,41 @@ export default {
                 'Cerrar sesión'
             ],
             drawer: null,
-            drawerItems: [
-                {
-                    title: 'Perfil',
-                    icon: 'account_circle'
-                }, {
-                    title: 'Home',
-                    icon: 'dashboard'
-                }, {
-                    title:'Articulos',
-                    icon: 'shopping_cart'
-                }, {
-                    title: 'Precios',
-                    icon: 'insert_chart',
-                }, {
-                    title: 'Cotizacion',
-                    icon: 'attach_money'
-                }, {
-                    title: 'Clientes',
-                    icon: 'person_add'
-                }, {
-                    title: 'Proveedor',
-                    icon: 'local_shipping'
-                }, {
-                    title: 'Cta/Cte',
-                    icon: 'bar_chart'
-                }, {
-                    title: 'Proveedor Cta/Cte',
-                    icon: 'bar_chart'
-                },{
-                    title: 'Ventas',
-                    icon: 'add_shopping_cart'
-                },{
-                    title: 'Facturas',
-                    icon: 'note'
-                },{
-                    title: 'Cobros',
-                    icon: 'payment'
-                }
-            ],
+            drawerItems: [],
             message: {
                 success: true,
                 content: ""
             },
-            transitionComponent: ''
+            transitionComponent: '',
+            rightNumber: 0,
+            colorNavBar: ""
         }
     },
     computed: {
         // 
     },
     methods: {
+        loadModules() {
+            let self = this;
+
+            let localStore = self.$localStorage.get("session");
+
+            let getModules = atob(JSON.parse(localStore).user.credentials);
+
+            let getColor = atob(JSON.parse(localStore).user.credentials);
+
+            let getRight = atob(JSON.parse(localStore).user.credentials);
+
+            let parseModules = JSON.parse(getModules);
+
+            for (let i = 0; i < parseModules[3].modules.length; i++) {
+                self.drawerItems.push(parseModules[3].modules[i]); 
+            }
+
+            self.colorNavBar = JSON.parse(getColor)[1].motive;
+            self.rightNumber = JSON.parse(getRight)[0].right;
+            
+        },
         toggleDrawer() {
             this.drawer = !this.drawer;
         },
@@ -234,9 +218,9 @@ export default {
 
                 }
                 this.toggleDrawer();
-            } else if (option === 'Articulos') {
-                if (self.transitionComponent !== 'Articulos') {
-                    self.transitionComponent = 'Articulos';
+            } else if (option === 'Artículos') {
+                if (self.transitionComponent !== 'Artículos') {
+                    self.transitionComponent = 'Artículos';
                     self.$localStorage.set('componentActive',self.transitionComponent);
 
                 }
@@ -254,9 +238,9 @@ export default {
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();
-            } else if (option === 'Cotizacion') {
-                if (self.transitionComponent !== 'Cotizacion') {
-                    self.transitionComponent = 'Cotizacion';
+            } else if (option === 'Cotización') {
+                if (self.transitionComponent !== 'Cotización') {
+                    self.transitionComponent = 'Cotización';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();
@@ -272,15 +256,15 @@ export default {
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();
-            } else if (option === 'Cta/Cte') {
-                if (self.transitionComponent !== 'Cta/Cte') {
-                    self.transitionComponent = 'Cta/Cte';
+            } else if (option === 'CTA/CTE CLI') {
+                if (self.transitionComponent !== 'CTA/CTE CLI') {
+                    self.transitionComponent = 'CTA/CTE CLI';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();
-            } else if (option === 'Proveedor Cta/Cte') {
-                if (self.transitionComponent !== 'Proveedor Cta/Cte') {
-                    self.transitionComponent = 'Proveedor Cta/Cte';
+            } else if (option === 'CTA/CTE PROV') {
+                if (self.transitionComponent !== 'CTA/CTE PROV') {
+                    self.transitionComponent = 'CTA/CTE PROV';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

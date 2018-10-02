@@ -104,10 +104,86 @@
             </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="dialog2" max-width="500px" persistent>
+				<v-card>
+					<v-card-title class="headline">
+						<v-container class="text-xs-center text-sm-center text-md-center">
+							Importar Precios
+						</v-container>
+					</v-card-title>
+                    <v-card-text v-if="isProcess === false">
+						<v-layout row wrap>
+							<!-- <v-flex xs12 sm12 md12>
+								<v-switch
+									label="Costo"
+									color="indigo"
+									v-model="swtCosto"
+								></v-switch>
+							</v-flex> -->
+							<v-flex xs12 sm12 md12>
+								<v-form enctype="multipart/form-data">
+									<v-container class="text-xs-center text-md-center">
+										<input type="file" id="xlsFile" accept="application/x-iwork-keynote-sffnumbers,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="processXlsx($event)" />
+									</v-container>
+								</v-form>
+							</v-flex>
+						</v-layout>
+					</v-card-text>
+					<v-card-text v-else-if="isProcess === true">
+						<v-progress-circular
+							:size="50"
+							color="primary"
+							indeterminate
+						></v-progress-circular>
+
+					</v-card-text>
+                    <v-card-actions>
+						<v-flex class="text-md-right text-xs-right">
+							<v-btn v-if="excelLoad === true" dark color="teal" v-on:click="sendXlsxProcess">{{titleProcess}}</v-btn>
+							<v-btn dark color="error" v-on:click="dialog2 = !dialog2">Cancelar</v-btn>
+                        </v-flex>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            
             <template>
                 <v-card>
                     <v-card-title>
                         Articulos por precio
+                        <v-spacer></v-spacer>
+                        <v-tooltip v-if="right == 0 || right == 1" bottom>
+                            <v-btn
+                                icon class="mx-0"
+                                slot="activator"
+                                v-on:click="openImport"
+                            >
+                                <v-icon color="blue lighten-1">arrow_upward</v-icon>
+                            </v-btn>
+                        <span>Importar Excel</span>
+                        </v-tooltip>
+                        <v-form method="GET" :action="exportService">
+                        <v-tooltip v-if="right == 0 || right == 1" bottom>
+                            <v-btn
+                                type="submit"
+                                icon class="mx-0"
+                                slot="activator"
+                            >
+                                <v-icon color="green lighten-1">arrow_downward</v-icon>
+                            </v-btn>
+                        <span>Exportar Excel</span>
+                        </v-tooltip>
+                        </v-form>
+                        <v-tooltip bottom>
+                            <v-btn
+                                icon class="mx-0"
+                                slot="activator"
+                                v-on:click="refresh"
+                            >
+                                <v-icon color="blue-grey lighten-1">autorenew</v-icon>
+                            </v-btn>
+                        <span>Actualizar</span>
+                        </v-tooltip>
                         <v-spacer></v-spacer>
                     <v-text-field
                         v-model="search"
@@ -163,6 +239,7 @@
 // Libs
 import axios from "axios";
 import moment from 'moment';
+import { excel2json } from 'js2excel';
 
 // Config
 import {
@@ -179,9 +256,13 @@ export default {
             } else {
                 this.token = savedSession.token;
                 this.getArticlesAndPrices();
+                this.exportService = CONFIG.SERVICE_BASE+CONFIG.SERVICE_URL.EXPORT+CONFIG.SERVICE_URL.PRICE;
 			}
 		},
     name: "Precios",
+    props: {
+		right: Number
+	},
     data() {
         return {
             token: '',
@@ -238,7 +319,13 @@ export default {
 			y: 'top',
 			x: null,
 			mode: '',
-			timeout: 6000
+            timeout: 6000,
+            exportService: "",
+            dialog2: false,
+            isProcess: false,
+			titleProcess: "Procesar",
+            excelLoad: false,
+            jsonProcess: []
         }
     },
     methods: {
@@ -381,6 +468,95 @@ export default {
             
             this.cotizacion = total;
         },
+        openImport() {
+            let self = this;
+            
+            self.dialog2 = !self.dialog2;
+        },
+        processXlsx(event) {
+            let self = this;
+            let format = event.target.files[0].name.toLowerCase().split(".");
+            
+            if (format[1] == "xls" || format[1] == "xlsx") {
+                excel2json(event.target.files, (data) => {
+                    if (data.Precios) {
+                        for (let i = 0; i < data.Precios.length; i++) {
+                            if (data.Precios[i].ID && data.Precios[i].ARTICULO && data.Precios[i].X_MAYOR && data.Precios[i].X_MENOR) {
+                                self.jsonProcess.push({
+                                    ID: data.Precios[i].ID,
+                                    ARTICULO: data.Precios[i].ARTICULO,
+                                    X_MAYOR: data.Precios[i].X_MAYOR,
+                                    X_MENOR: data.Precios[i].X_MENOR
+                                });
+                            }
+                        }
+                        
+                        self.excelLoad = true;
+                        } else {
+                            self.handleSnackbar(false, "Nombre de Hoja de Calculo invalida.");
+                            
+                            setTimeout(function() {
+                                document.getElementById("xlsFile").value = null;
+                            }, 500);
+                        }
+                }, 'excel2json');
+				} else {
+					self.handleSnackbar(false, "Debe ser Excel (XLS - XLSX)");
+					
+					setTimeout(function() {
+						document.getElementById("xlsFile").value = null;
+					}, 500);
+				}
+			},
+            refresh() {
+                let self = this;
+                
+                self.desserts = [];
+                
+                setTimeout(function() {
+                    self.getArticlesAndPrices();
+                }, 200);
+            },
+            sendXlsxProcess() {
+                let self = this;
+                
+                self.isProcess = true;
+                self.titleProcess = "Procesando...";
+                
+                axios({
+					method: "POST",
+					url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.IMPORT + CONFIG.SERVICE_URL.PRICE,
+					headers: {
+						"Authorization": "Bearer " + self.token
+					},
+					data: {
+						_method: 'put',
+						prices: JSON.stringify(self.jsonProcess)
+					}
+				})
+				.then(success => {
+					let response = success.data;
+					
+					self.handleSnackbar(response.success, response.content);
+					self.dialog2 = !self.dialog2;
+                    self.swtCosto = false;
+                    setTimeout(function() {
+                        self.isProcess = false;
+                        self.titleProcess = "Procesar"; 
+                        self.excelLoad = false;
+                        }, 500);
+					self.desserts = [];
+					this.getArticlesAndPrices();
+				})
+				.catch(err => {
+					console.log(err);
+					self.isProcess = false;
+					self.titleProcess = "Procesar";
+					self.excelLoad = false;
+					document.getElementById("xlsFile").value = null;
+				});
+			},
+
     }
 }
 </script>

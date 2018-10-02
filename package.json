@@ -8,7 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "atob": "^2.1.2",
     "axios": "^0.18.0",
+    "btoa": "^1.2.1",
     "js2excel": "^1.0.1",
     "moment": "^2.22.2",
     "register-service-worker": "^1.0.0",

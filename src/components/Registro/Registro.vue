@@ -1,14 +1,12 @@
 <template>
     <v-app light>
         <v-container fluid>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog v-model="dialog" max-width="500px" persistent>
                 <v-card>
                     <v-card-title>
-                        <v-toolbar color="indigo" dark>
-                            <v-flex justify-center>
-                                <v-toolbar-title>Registrar usuario</v-toolbar-title>
-                            </v-flex>
-                        </v-toolbar>
+                        <v-flex class="text-md-center text-xs-center">
+                            <span class="headline">Registrar Usuario</span>
+                        </v-flex>
                     </v-card-title>
                     <v-card-text>
                         <v-form>
@@ -123,6 +121,7 @@
 </template>
 
 <script>
+
 import axios from "axios";
 import { validationMixin } from "vuelidate";
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
@@ -168,13 +167,22 @@ export default {
       },
       selectPrivilegio: null,
       items: [
-        {
-            text: 'Vendedor',
-            value: 2 
-        },{
-            text: 'Administrador',
-            value: 1
-        }
+          {
+              text: "Repartidor",
+              value: 4
+          }, {
+              text: "Vendedor",
+              value: 3
+          }, {
+              text: "Cajero",
+              value: 2
+          }, {
+              text: "Encargado Gral",
+              value: 1
+          }, {
+              text: "El papaupa",
+              value: 0
+          }
         ],
       dialog: false,
       nombres: "",
@@ -251,13 +259,13 @@ export default {
           .then(success => {
             self.message.success = success.data.success;
             self.message.content = success.data.content;
-
+            
+            self.dialogEvent(false);
             self.handleSnackbar(self.message.success, self.message.content);
             
             setTimeout(function() {
-                self.dialogEvent(false);
                 self.cleanForm();
-            }, 2000);
+            }, 500);
           })
           .catch(err => {
               let validationErr = err.response.error;

@@ -60,13 +60,18 @@
 <script>
 // Libs
 import axios from "axios";
+
+import atob from "atob";
+
 import {
     validationMixin
 } from "vuelidate";
+
 import {
     required,
     email
 } from "vuelidate/lib/validators";
+
 // Configuración.
 import { 
     CONFIG
@@ -146,11 +151,30 @@ export default {
                     }
                 })
                 .then(success => {
-                    let response = success.data;
+                    let response = success.data
+                    let b64Decode = atob(response.user.credentials);
 
                     self.$localStorage.set('session', JSON.stringify(response));
-                    self.$localStorage.set('componentActive', 'Home');
-                    self.$router.push({path: '/home'});
+
+                    let right = JSON.parse(b64Decode)[0].right;
+
+                    if (right === 0) {
+                        self.$localStorage.set('componentActive', 'Home');
+                        self.$router.push({path: '/home'});
+                    } else if (right === 1) {
+                        self.$localStorage.set('componentActive', 'Home');
+                        self.$router.push({path: '/home'});
+                    } else if (right === 2) {
+                        self.$localStorage.set('componentActive', 'Cobros');
+                        self.$router.push({path: '/debt-collector'});
+                    } else if (right === 3) {
+                        self.$localStorage.set('componentActive', 'Ventas');
+                        self.$router.push({path: '/seller'});
+                    }
+
+
+
+                    // console.log(right);
                 })
                 .catch(err => {
                     let validationErr = err.response.error;

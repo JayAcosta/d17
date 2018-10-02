@@ -225,12 +225,12 @@
                     </v-layout>
                 <v-container>
                     <v-layout row wrap>
-                        <v-flex xs12 sm3 md6>
+                        <v-flex xs12 sm12 md12>
                             <v-btn color="blue" outline dark large v-on:click="consolidate">Consolidar</v-btn>
                         </v-flex>
-                        <v-flex xs12 sm3 md6>
+                        <!-- <v-flex xs12 sm3 md6>
                             <v-btn color="green" outline dark large>Apartar x 24/hrs</v-btn>
-                        </v-flex>
+                        </v-flex> -->
                     </v-layout>
                 </v-container>
             </template>
@@ -276,6 +276,9 @@ export default {
         }
     },
     name: "Ventas",
+    props: {
+		right: Number
+	},
     data() {
         return {
             id: 0,
@@ -593,8 +596,8 @@ export default {
             let conf = confirm("Esta seguro de consolidar esta Lista de Articulos?");
 
             if (conf === true) {
-
-                axios({
+                if (self.tableItems.length) {
+                    axios({
                     method: "POST",
                     url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.SALE,
                     headers: {
@@ -654,6 +657,9 @@ export default {
 
                 self.handleSnackbar(self.message.success, self.message.content);
                 });
+                } else {
+                    self.handleSnackbar(false, "Agrege items a la lista para consolidar.");
+                }
             } else {
                 return false;
             }

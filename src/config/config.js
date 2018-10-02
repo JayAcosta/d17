@@ -50,7 +50,8 @@ const CONFIG = {
         "INVOICE": "/invoice",
         "EXPORT": "/export",
         "IMPORT": "/import",
-        "ARTICLE": "/article"
+        "ARTICLE": "/article",
+        "PRICE": "/price"
     }
 };
 
