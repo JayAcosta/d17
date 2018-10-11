@@ -37,6 +37,9 @@
                 <div v-else-if="transitionComponent === 'Ventas'">
                     <lista-ventas :right="rightNumber" />
                 </div>
+                <div v-else-if="transitionComponent === 'Precios'">
+                    <lista-precios :right="rightNumber" />
+                </div>
             </v-layout>
         </v-container>
     
@@ -83,6 +86,7 @@ import atob from "atob";
 
 // Componentes Web.
 import Ventas from "@/components/Ventas/Ventas";
+import Precios from "@/components/Precios/Precios";
 import ListaArticulos from "@/components/Articulos/ListaArticulos";
 import Cliente from "@/components/Cliente/Cliente";
 
@@ -96,7 +100,8 @@ export default {
     components: {
         "lista-ventas": Ventas,
         "lista-articulos": ListaArticulos,
-        "lista-clientes": Cliente
+        "lista-clientes": Cliente,
+        "lista-precios": Precios
     },
     beforeMount() {
         this.title = "Ventas D17";
@@ -211,6 +216,12 @@ export default {
             } else if (option === 'Ventas') {
                 if (self.transitionComponent !== 'Ventas') {
                     self.transitionComponent = 'Ventas';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                self.toggleDrawer();
+            } else if (option === 'Precios') {
+                if (self.transitionComponent !== 'Precios') {
+                    self.transitionComponent = 'Precios';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 self.toggleDrawer();

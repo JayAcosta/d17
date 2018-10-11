@@ -201,11 +201,11 @@
                     >
                     <template slot="items" slot-scope="props">
                         <td class="text-xs-center text-md-center">{{ props.item.ARTICULO }}</td>
-                        <td class="text-xs-center text-md-center">{{ props.item.COSTO }}</td>
+                        <td v-if="right == 0 || right == 1" class="text-xs-center text-md-center">{{ props.item.COSTO }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.PRECIO_X_MAYOR }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.PRECIO_X_MENOR }}</td>
                         <td class="text-xs-center text-md-center">{{ props.item.CAMBIO_DOLAR }}</td>
-                        <td class="justify-center layout px-0">
+                        <td v-if="right == 0 || right == 1" class="justify-center layout px-0">
                             <v-btn icon class="mx-0" v-on:click="openDialog(props.item)">
                                 <v-icon color="teal">edit</v-icon>
                             </v-btn>
@@ -267,33 +267,7 @@ export default {
         return {
             token: '',
             search: '',
-            headers: [
-                {
-                    text: 'Articulo',
-                    value: 'ARTICULO',
-                    sortable: false
-                }, {
-                    text: 'Costo',
-                    value: 'COSTO',
-                    sortable: false
-                }, {
-                    text: 'Precio x mayor',
-                    value: 'PRECIO_X_MAYOR',
-                    sortable: false
-                }, {
-                    text: 'Precio x menor',
-                    value: 'PRECIO_X_MENOR',
-                    sortable: false
-                }, {
-                    text: 'Cotización',
-                    value: 'CAMBIO_DOLAR',
-                    sortable: false
-                }, {
-					text: 'Actions',
-					value: 'name',
-					sortable: false
-				}
-            ],
+            headers: [],
             desserts: [],
             dialog: false,
             articleId: 0,
@@ -340,8 +314,56 @@ export default {
                 }
              })
              .then(success => {
+                 self.headers = [];
                  for (let i = 0; i < success.data.rows.length; i++) {
                      self.desserts.push(success.data.rows[i]);
+                }
+                    if (self.right == 0 || self.right == 1) {
+                        self.headers.push(
+                            {
+                                text: 'Articulo',
+                                value: 'ARTICULO',
+                                sortable: false
+                            }, {
+                                text: 'Costo',
+                                value: 'COSTO',
+                                sortable: false
+                            }, {
+                                text: 'Precio x mayor',
+                                value: 'PRECIO_X_MAYOR',
+                                sortable: false
+                            }, {
+                                text: 'Precio x menor',
+                                value: 'PRECIO_X_MENOR',
+                                sortable: false
+                            }, {
+                                text: 'Cotización',
+                                value: 'CAMBIO_DOLAR',
+                                sortable: false
+                            }, {
+                                text: 'Actions',
+                                value: 'name',
+                                sortable: false
+                            });
+                    } else {
+                        self.headers.push(
+                            {
+                                text: 'Articulo',
+                                value: 'ARTICULO',
+                                sortable: false
+                            }, {
+                                text: 'Precio x mayor',
+                                value: 'PRECIO_X_MAYOR',
+                                sortable: false
+                            }, {
+                                text: 'Precio x menor',
+                                value: 'PRECIO_X_MENOR',
+                                sortable: false
+                            }, {
+                                text: 'Cotización',
+                                value: 'CAMBIO_DOLAR',
+                                sortable: false
+                            });
                     }
              })
              .catch(err => {

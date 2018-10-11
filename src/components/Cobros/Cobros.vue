@@ -30,8 +30,8 @@
                     </v-list-tile-content>
 
             <v-list-tile-action>
-              <v-btn icon ripple>
-                <v-icon color="grey lighten-1" v-on:click="loadDetail(item)">info</v-icon>
+              <v-btn icon ripple @click="loadDetail(item)">
+                <v-icon color="grey lighten-1">info</v-icon>
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
@@ -189,10 +189,21 @@
                                     readonly
                                 />
                             </v-flex>
-                            <v-flex v-if="totalFavor != 0" xs10 sm10 md10 class="text-xs-left text-sm-left text-md-left">
+                            <v-flex v-if="favorParallel < 0" xs10 sm10 md10 class="text-xs-left text-sm-left text-md-left">
+                                Deuda:
+                            </v-flex>
+                            <v-flex v-if="favorParallel < 0" xs2 sm2 md2 class="text-xs-right text-sm-right text-md-right">
+                                <input
+                                    type="text"
+                                    style="font-size: 10px; width: 149px;"
+                                    v-model="favorParallelRef"
+                                    readonly
+                                />
+                            </v-flex>
+                            <v-flex v-if="totalFavor > 0" xs10 sm10 md10 class="text-xs-left text-sm-left text-md-left">
                                 A Favor:
                             </v-flex>
-                            <v-flex v-if="totalFavor != 0" xs2 sm2 md2 class="text-xs-right text-sm-right text-md-right">
+                            <v-flex v-if="totalFavor > 0" xs2 sm2 md2 class="text-xs-right text-sm-right text-md-right">
                                 <input
                                     type="text"
                                     style="font-size: 10px; width: 149px;"
@@ -204,7 +215,7 @@
                         </v-container>
                     </v-card-text>
                 <v-card-actions>
-                    <v-container v-if="total == 0 || total < 0" xs12 sm12 md12 class="text-xs-center text-sm-center text-md-center">
+                    <v-container v-if="total <= 0 " xs12 sm12 md12 class="text-xs-center text-sm-center text-md-center">
                         <v-btn
                             round
                             dark
@@ -487,7 +498,7 @@
             outline
             color="indigo"
             class="white--text"
-            @click.native="consolidateCharge"
+            @click.native="addGiro"
             >
                 Agregar Giro
           </v-btn>
@@ -598,7 +609,9 @@ export default {
             correlative: 0,
             giroDescrip: '',
             typeSale: 0,
-            disableAceptar: false
+            disableAceptar: false,
+            favorParallel: 0,
+            favorParallelRef: 0
         }
     },
     computed: {
@@ -682,8 +695,8 @@ export default {
                          items: JSON.parse(success.data.rows[i].ITEMS),
                          name: self.verifyName(success.data.rows[i].NOM),
                          total: success.data.rows[i].TTL,
-                         dir: success.data.rows[i].DIR,
-                         favor: (success.data.rows[i].SAL_FAV != null) ? success.data.rows[i].SAL_FAV : 0
+                         dir: success.data.rows[i].DIR/* ,
+                         favor: (success.data.rows[i].SAL_FAV != null) ? success.data.rows[i].SAL_FAV : 0 */
                      });
                 }
             })
@@ -736,7 +749,7 @@ export default {
                 let partsOfStr = arr.dir.split(',');
                 
                 self.typeSale = 2;
-                self.fullname = arr.name+' '+partsOfStr[1];
+                self.fullname = arr.name+', '+partsOfStr[1];
                 self.total = arr.total;
                 self.totalInicial = arr.total;
                 self.totalConst = arr.total;
@@ -745,14 +758,56 @@ export default {
                 self.id = arr.id;
                 self.idCli = arr.client;
                 self.idFac = arr.fac;
-                self.totalFavor = arr.favor;
+                self.getFavor(arr.client);
+                
+                setTimeout(function() {
+                    if (self.totalFavor < self.totalConst) {
+                        self.disableCash = false;
+                        self.disableCheck = false;
+                        // self.total = (parseFloat(self.total) - parseFloat(self.totalFavor));
+                        // console.log(self.total);
+                        // self.totalRef = parseFloat(self.totalRef) - parseFloat(self.totalFavor);
+                        self.total = self.totalRef;
+                        self.totalInicial = self.totalRef;
+                    } else {
+                        self.disableCash = true;
+                        self.disableCheck = false;
+                        // self.totalRef = parseFloat(self.totalRef) - parseFloat(self.totalFavor);
+                        self.total = self.totalRef;
+                        self.totalInicial = self.totalRef;
+                    }
+                }, 300);
+                // TODO
+                // Colocar async
 
-                if (arr.favor != 0) {
-                    self.totalRef = parseFloat(self.totalRef) - parseFloat(arr.favor);
-                    self.total = self.totalRef;
-                    self.totalInicial = self.totalRef;
-                }
+                // console.log(arr.client);
+                // self.totalFavor = arr.favor;
             }
+        },
+        getFavor(id) {
+            let self = this;
+            
+            axios({
+                method: "GET",
+                url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.GETFAVOR + "/"+id,
+                headers: {
+                    "Authorization": "Bearer " + self.token
+                }
+            })
+            .then(success => {
+                if (success.data.content.length) {
+                    self.totalFavor = success.data.content[0].SAL_FAV;
+                    self.favorParallel = success.data.content[0].SAL_FAV;
+                    self.favorParallelRef = (self.favorParallel * -1);
+                } else {
+                    self.totalFavor = 0;
+                    self.favorParallel = 0;
+                    self.favorParallelRef = (self.favorParallel * -1);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
         },
         verifyTypeSale(sale) {
             if (sale == 1) {
@@ -1041,7 +1096,7 @@ export default {
             // self.totalInicial = self.total;
             
             self.dialog = !self.dialog;
-            console.log(self.total);
+            
         },
         cancelPayCashDebitCredit() {
             let self = this;
@@ -1057,13 +1112,18 @@ export default {
             let conf = confirm("Esta seguro de inicializar los Pagos?");
 
             if (conf === true) {
+                self.showDetail = false;
+
                 self.abonadoDebit = 0;
                 self.abonadoCash = 0;
                 self.abonadoCheck = 0;
                 self.totalRef = self.totalConst;
                 self.total = self.totalRef;
                 self.totalInicial = self.totalRef;
-                self.disableCash = false;
+                self.disableCtaCte = true;
+                self.disableCash = true;
+                self.disableDebit = true;
+                self.disableCredit = true;
                 self.totalFavor = 0;
                 self.detailArr = [];
                 self.checkNumArr = [];
@@ -1080,39 +1140,78 @@ export default {
 
             if (conf === true) {
                 
-                // let paymenTotal = {
-                //     cash: (self.abonadoCash != 0) ? self.abonadoCash : 0,
-                //     debit: (self.abonadoDebit != 0) ? self.abonadoDebit : 0,
-                //     check: (self.abonadoCheck != 0) ? self.abonadoCheck : 0,
-                //     ctaCte: (self.total != 0) ? self.total : 0
-                // };
+                let paymenTotal = {
+                    cash: (self.abonadoCash != 0) ? self.abonadoCash : 0,
+                    debit: (self.abonadoDebit != 0) ? self.abonadoDebit : 0,
+                    check: (self.abonadoCheck != 0) ? self.abonadoCheck : 0,
+                    ctaCte: self.total
+                };
 
-                // console.log(paymenTotal);
+                axios({
+                        method: "POST",
+                        url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CHARGE + CONFIG.SERVICE_URL.CTACTE,
+                        headers: {
+                            "Authorization": "Bearer " + self.token
+                        },
+                        data: {
+                            idClient: (self.idCli !== 0) ? self.idCli : 0,
+                            idSale: self.id,
+                            idFac: self.idFac,
+                            typeSale: self.typeSale,
+                            giroDesc: self.giroDescrip,
+                            purchaseItems: JSON.stringify(self.detailArr),
+                            checkTotal: (self.checkData.length) ? JSON.stringify(self.checkData) : "",
+                            paymentTotal: JSON.stringify(paymenTotal),
+                            inFavor: (self.totalFavor != 0) ? self.totalFavor : 0,
+                            totalRef: self.totalConst
+                        }
+                    })
+                    .then(success => {
+                        let response = success.data;
+                        let getLastSession = JSON.parse(self.$localStorage.get('session'));
 
+                        self.$localStorage.remove('session');
 
+                        getLastSession.token = response.content.token;
+                        
+                        self.$localStorage.set('session', JSON.stringify(getLastSession));
+                        self.token = getLastSession.token;
 
+                        self.handleSnackbar(response.success, response.content.message);
+                        self.showDetail = false;
+                        self.salesItems = [];
+                        self.checkNumArr = [];
+                        self.checkSumArr = [];
+                        self.detailArr = [];
+                        self.abonadoDebit = 0;
+                        self.abonadoCash = 0;
+                        self.abonadoCheck = 0;
+                        self.totalRef = 0;
+                        self.total = 0;
+                        self.totalInicial = 0;
+                        self.totalConst = 0;
+                        self.disableCash = false;
+                        self.getSales();
+                        self.dialog = false;
 
-
-            // id de la venta
-            // console.log(self.id);
-
-            // id del cliente
-            // console.log(self.idCli);
-
-            // json de articulos de la compra
-            // console.log(self.detailArr);
-            
-            // total del paquete
-            // console.log(self.totalConst);
-
-            // json de los cheques
-            // console.log(self.checkData);
-            
-            // let paymenTotal = {
-            //     cash: (self.abonadoCash != 0) ? self.abonadoCash : 0,
-            //     debit: (self.abonadoDebit != 0) ? self.abonadoDebit : 0,
-            //     check: (self.abonadoCheck != 0) ? self.abonadoCheck : 0
-            // };     
+                    })
+                    .catch(err => {
+                        if (err.response.status === 400) {
+                            let errParse = err.response.data.errors;
+                            console.log(errParse);
+                        } 
+                        if (err.response.status === 401) {
+                            alert('Este Cobro ya ha sido procesado.');
+                            location.reload();
+                            // self.$localStorage.remove('session');
+                            // self.$router.push({path: '/'});
+                        } else if (err.response.status === 409) {
+                            alert(err.response.data.content);
+                            location.reload();
+                        } else {
+                            console.log(err);
+                        }
+                    });
             } else {
                 return false;
             }
@@ -1138,49 +1237,77 @@ export default {
                     check: (self.abonadoCheck != 0) ? self.abonadoCheck : 0,
                     ctaCte: (self.total > 0) ? self.total : 0
                 };
-                
-                axios({
-                    method: "POST",
-                    url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CHARGE,
-                    headers: {
-                        "Authorization": "Bearer " + self.token
-                    },
-                    data: {
-                        idClient: (self.idCli !== 0) ? self.idCli : 0,
-                        idSale: self.id,
-                        idFac: self.idFac,
-                        typeSale: self.typeSale,
-                        giroDesc: self.giroDescrip,
-                        purchaseItems: JSON.stringify(self.detailArr),
-                        checkTotal: (self.checkData.length) ? JSON.stringify(self.checkData) : "",
-                        paymentTotal: JSON.stringify(paymenTotal),
-                        inFavor: (self.totalFavor != 0) ? self.totalFavor : 0,
-                        totalRef: self.totalConst
-                    }
-                })
-                .then(success => {
-                    let response = success.data;
-                    
-                    self.handleSnackbar(response.success, response.content);
-                    self.showDetail = false;
-                    self.salesItems = [];
-                    self.checkNumArr = [];
-                    self.checkSumArr = [];
-                    self.detailArr = [];
-                    self.abonadoDebit = 0;
-                    self.abonadoCash = 0;
-                    self.abonadoCheck = 0;
-                    self.totalRef = 0;
-                    self.total = 0;
-                    self.totalInicial = 0;
-                    self.totalConst = 0;
-                    self.disableCash = false;
-                    self.getSales();
+                // TODO
+                if (self.favorParallel <= 0) {
+                        axios({
+                        method: "POST",
+                        url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.CHARGE,
+                        headers: {
+                            "Authorization": "Bearer " + self.token
+                        },
+                        data: {
+                            idClient: (self.idCli !== 0) ? self.idCli : 0,
+                            idSale: self.id,
+                            idFac: self.idFac,
+                            typeSale: self.typeSale,
+                            giroDesc: self.giroDescrip,
+                            purchaseItems: JSON.stringify(self.detailArr),
+                            checkTotal: (self.checkData.length) ? JSON.stringify(self.checkData) : "",
+                            paymentTotal: JSON.stringify(paymenTotal),
+                            inFavor: (self.totalFavor != 0) ? self.totalFavor : 0,
+                            totalRef: self.totalConst
+                        }
+                    })
+                    .then(success => {
+                        let response = success.data;
+                        let getLastSession = JSON.parse(self.$localStorage.get('session'));
 
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                        self.$localStorage.remove('session');
+
+                        getLastSession.token = response.content.token;
+                        
+                        self.$localStorage.set('session', JSON.stringify(getLastSession));
+                        self.token = getLastSession.token;
+
+                        self.handleSnackbar(response.success, response.content.message);
+                        self.showDetail = false;
+                        self.salesItems = [];
+                        self.checkNumArr = [];
+                        self.checkSumArr = [];
+                        self.detailArr = [];
+                        self.abonadoDebit = 0;
+                        self.abonadoCash = 0;
+                        self.abonadoCheck = 0;
+                        self.totalRef = 0;
+                        self.total = 0;
+                        self.totalInicial = 0;
+                        self.totalConst = 0;
+                        self.disableCash = false;
+                        self.getSales();
+                        self.dialog = false;
+
+                    })
+                    .catch(err => {
+                        if (err.response.status === 400) {
+                            let errParse = err.response.data.errors;
+                            console.log(errParse);
+                        } 
+                        if (err.response.status === 401) {
+                            alert('Este Cobro ya ha sido procesado.');
+                            location.reload();
+                            // self.$localStorage.remove('session');
+                            // self.$router.push({path: '/'});
+                        } else if (err.response.status === 409) {
+                            alert(err.response.data.content);
+                            location.reload();
+                        } else {
+                            console.log(err);
+                        }
+                    });
+                } else {
+                    console.log(self.favorParallel);
+                     self.handleSnackbar(false, "Tiene saldo a favor, cancele por CTA/CTE.");
+                }
             } else {
                 return false;
             }

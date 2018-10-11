@@ -1,7 +1,7 @@
 'use strict';
 
 const CONFIG = {
-    "SERVICE_BASE": "http://192.168.0.9:9022/api",
+    "SERVICE_BASE": "http://192.168.0.8:9020/api",
     "SERVICE_URL": {
         "BASE": "/",
         "REGISTRO": "/registrer",
@@ -51,7 +51,9 @@ const CONFIG = {
         "EXPORT": "/export",
         "IMPORT": "/import",
         "ARTICLE": "/article",
-        "PRICE": "/price"
+        "PRICE": "/price",
+        "GETFAVOR": "/get-favor",
+        "CTACTE": "/cta-cte"
     }
 };
 

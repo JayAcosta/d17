@@ -42,7 +42,7 @@
                     aqui perfil
                 </div>
                 <div v-else-if="transitionComponent === 'Usuario'">
-                    <agregar-usuario />
+                    <lista-usuarios />
                 </div>
                 <div v-else-if="transitionComponent === 'Precios'">
                     <lista-precios :right="rightNumber" />
@@ -125,7 +125,7 @@ import ProveedorCtaCte from "@/components/ProveedorCtaCte/ProveedorCtaCte";
 import Ventas from "@/components/Ventas/Ventas";
 import Facturas from "@/components/Facturas/Facturas";
 import Cobros from "@/components/Cobros/Cobros";
-import Registro from "@/components/Registro/Registro";
+import Usuarios from "@/components/Usuarios/Usuarios";
 
 // Config
 import { 
@@ -144,7 +144,7 @@ export default {
         'lista-ventas': Ventas,
         'lista-facturas': Facturas,
         'lista-cobros': Cobros,
-        'agregar-usuario': Registro
+        'lista-usuarios': Usuarios
     },
     beforeMount() {
         this.title = 'Darsena-17';
