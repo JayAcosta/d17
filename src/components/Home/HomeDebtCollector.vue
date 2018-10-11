@@ -34,6 +34,9 @@
                 <div v-else-if="transitionComponent === 'Cobros'">
                     <lista-cobros :right="rightNumber" />
                 </div>
+                <div v-else-if="transitionComponent === 'Precios'">
+                    <lista-precios :right="rightNumber" />
+                </div>
             </v-layout>
         </v-container>
     
@@ -80,6 +83,7 @@ import atob from "atob";
 
 // Componentes Web.
 import ListaArticulos from "@/components/Articulos/ListaArticulos";
+import Precios from "@/components/Precios/Precios";
 import Cobros from "@/components/Cobros/Cobros";
 
 // Config
@@ -90,7 +94,8 @@ import {
 export default {
     components: {
         "lista-articulos": ListaArticulos,
-        "lista-cobros": Cobros
+        "lista-cobros": Cobros,
+        "lista-precios": Precios
     },
     beforeMount() {
         this.title = "Cobranza D17";
@@ -199,6 +204,12 @@ export default {
             } else if (option === 'Cobros') {
                 if (self.transitionComponent !== 'Cobros') {
                     self.transitionComponent = 'Cobros';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                self.toggleDrawer();
+            } else if (option === 'Precios') {
+                if (self.transitionComponent !== 'Precios') {
+                    self.transitionComponent = 'Precios';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 self.toggleDrawer();

@@ -51,7 +51,9 @@ const CONFIG = {
         "EXPORT": "/export",
         "IMPORT": "/import",
         "ARTICLE": "/article",
-        "PRICE": "/price"
+        "PRICE": "/price",
+        "GETFAVOR": "/get-favor",
+        "CTACTE": "/cta-cte"
     }
 };
 

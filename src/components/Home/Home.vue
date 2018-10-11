@@ -41,6 +41,9 @@
                 <div v-else-if="transitionComponent === 'Perfil'">
                     aqui perfil
                 </div>
+                <div v-else-if="transitionComponent === 'Usuario'">
+                    <lista-usuarios />
+                </div>
                 <div v-else-if="transitionComponent === 'Precios'">
                     <lista-precios :right="rightNumber" />
                 </div>
@@ -122,6 +125,7 @@ import ProveedorCtaCte from "@/components/ProveedorCtaCte/ProveedorCtaCte";
 import Ventas from "@/components/Ventas/Ventas";
 import Facturas from "@/components/Facturas/Facturas";
 import Cobros from "@/components/Cobros/Cobros";
+import Usuarios from "@/components/Usuarios/Usuarios";
 
 // Config
 import { 
@@ -139,7 +143,8 @@ export default {
         'proveedor-cuenta-corriente': ProveedorCtaCte,
         'lista-ventas': Ventas,
         'lista-facturas': Facturas,
-        'lista-cobros': Cobros
+        'lista-cobros': Cobros,
+        'lista-usuarios': Usuarios
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -283,6 +288,12 @@ export default {
             } else if (option === 'Cobros') {
                 if (self.transitionComponent !== 'Cobros') {
                     self.transitionComponent = 'Cobros';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'Usuario') {
+                if (self.transitionComponent !== 'Usuario') {
+                    self.transitionComponent = 'Usuario';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

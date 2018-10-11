@@ -129,7 +129,7 @@ import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
 import { CONFIG } from "../../config/index";
 
 export default {
-  name: "Registro",
+  name: "Usuarios",
   props: {},
   mixins: [validationMixin],
   validations: {
@@ -180,7 +180,7 @@ export default {
               text: "Encargado Gral",
               value: 1
           }, {
-              text: "El papaupa",
+              text: "Admin",
               value: 0
           }
         ],
