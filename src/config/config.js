@@ -53,7 +53,9 @@ const CONFIG = {
         "ARTICLE": "/article",
         "PRICE": "/price",
         "GETFAVOR": "/get-favor",
-        "CTACTE": "/cta-cte"
+        "CTACTE": "/cta-cte",
+        "GETUSERS": "/users/get",
+        "DELETEUSERS": "/users/soft-delete"
     }
 };
 

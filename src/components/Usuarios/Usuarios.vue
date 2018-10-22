@@ -5,7 +5,7 @@
                 <v-card>
                     <v-card-title>
                         <v-flex class="text-md-center text-xs-center">
-                            <span class="headline">Registrar Usuario</span>
+                            <span class="headline">{{title}}</span>
                         </v-flex>
                     </v-card-title>
                     <v-card-text>
@@ -20,6 +20,7 @@
                                         @input="$v.nombres.$touch()"
                                         @blur="$v.nombres.$touch()"
                                         required
+                                        :readonly="read"
                                     ></v-text-field>
                                 </v-layout>
                                 <v-layout row wrap>
@@ -31,6 +32,7 @@
                                         @input="$v.apellidos.$touch()"
                                         @blur="$v.apellidos.$touch()"
                                         required
+                                        :readonly="read"
                                     ></v-text-field>
                                 </v-layout>
                                 <v-layout row wrap>
@@ -44,9 +46,11 @@
                                         placeholder="ejemplo@dominio.com"
                                         autocapitalize="off"
                                         required
+                                        :disabled="disableEmail"
+                                        :readonly="read"
                                     ></v-text-field>
                                 </v-layout>
-                                <v-layout row wrap>
+                                <v-layout row wrap v-if="action == 'add'">
                                     <v-select
                                         :items="items"
                                         v-model="selectPrivilegio"
@@ -57,7 +61,21 @@
                                         single-line
                                     ></v-select>
                                 </v-layout>
-                                <v-layout row wrap>
+                                <v-layout row wrap v-if="action == 'see' || action == 'edit'">
+                                    <v-text-field
+                                        label="Privilegio"
+                                        v-model="selectPrivilegio"
+                                        required
+                                        :readonly="read"
+                                        :disabled="disablePriv"
+                                    ></v-text-field>
+                                </v-layout>
+                                <v-layout row wrap v-if="action == 'see'">
+                                    <v-container class="text-xs-center text-md-center">
+                                        <v-btn v-on:click="showBarcode" outline color="primary">Ver Código de Barras</v-btn>
+                                    </v-container>
+                                </v-layout>
+                                <v-layout row wrap v-if="action == 'add' || action == 'edit'">
                                     <v-text-field
                                         label="Contraseña"
                                         name="password"
@@ -69,7 +87,7 @@
                                         type="password"
                                     ></v-text-field>
                                 </v-layout>
-                                <v-layout row wrap>
+                                <v-layout row wrap v-if="action == 'add' || action == 'edit'">
                                     <v-text-field
                                         label="Confirmar Contraseña"
                                         name="c_password"
@@ -86,12 +104,65 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-flex class="text-md-right text-xs-right">
-                            <v-btn color="primary" v-on:click="sendForm" >Enviar</v-btn>
+                            <v-btn color="primary" v-if="action == 'add'" v-on:click="sendForm" >Enviar</v-btn>
                             <v-btn color="error" v-on:click="dialogEvent(false)">Cancelar</v-btn>
                         </v-flex>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <template>
+                <v-card>
+                    <v-card-title>
+                        Lista de Usuarios
+                        <v-spacer></v-spacer>
+                        <v-tooltip bottom>
+                            <v-btn
+                                icon class="mx-0"
+                                slot="activator"
+                                v-on:click="refresh()"
+                            >
+                                <v-icon color="blue-grey lighten-1">autorenew</v-icon>
+                            </v-btn>
+				        <span>Actualizar</span>
+				        </v-tooltip>
+				        <v-spacer></v-spacer>
+				        <v-text-field
+					        v-model="search"
+    					    append-icon="search"
+					        label="Search"
+					        single-line
+					        hide-details
+				        ></v-text-field>
+				    </v-card-title>
+				    <v-data-table
+					    :headers="headers"
+					    :items="arrItems"
+					    :search="search"
+				    >
+				    <template slot="items" slot-scope="props">
+					    <td class="text-xs-center text-md-center">{{ props.item.ID }}</td>
+					    <td class="text-xs-center text-md-center">{{ props.item.EMA }}</td>
+					    <td class="text-xs-center text-md-center">{{ props.item.FUL_NOM }}</td>
+					    <td class="text-xs-center text-md-center">{{ props.item.STA }}</td>
+					    <td class="text-xs-center text-md-center">{{ props.item.FEC_CRE }}</td>
+					    <td class="justify-center layout px-0">
+					    <v-btn icon class="mx-0" @click="editUser(props.item)">
+						    <v-icon color="teal">edit</v-icon>
+					    </v-btn>
+					    <v-btn icon class="mx-0" @click="deleteUser(props.item)">
+    						<v-icon color="pink">delete</v-icon>
+					    </v-btn>
+					    <v-btn icon class="mx-0" @click="seeUser(props.item)">
+						    <v-icon color="blue">account_circle</v-icon>
+					    </v-btn>
+					    </td>
+				    </template>
+				    <v-alert slot="no-results" :value="true" color="error" icon="warning">
+					    Your search for "{{ search }}" found no results.
+				    </v-alert>
+				    </v-data-table>
+			    </v-card>
+			</template>
             <v-btn
                 color="pink"
                 dark
@@ -99,7 +170,7 @@
                 bottom
                 right
                 fab
-                v-on:click="dialogEvent(true)"
+                v-on:click="addUser()"
             >
                 <v-icon>add</v-icon>
             </v-btn>
@@ -123,16 +194,28 @@
 <script>
 
 import axios from "axios";
+import atob from "atob";
+import moment from "moment";
 import { validationMixin } from "vuelidate";
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
 
 import { CONFIG } from "../../config/index";
 
 export default {
-  name: "Usuarios",
-  props: {},
-  mixins: [validationMixin],
-  validations: {
+    beforeMount() {
+        let savedSession = (this.$localStorage.get('session') !== undefined) ? JSON.parse(this.$localStorage.get('session')) : '';
+            if (savedSession === null) {
+                this.$router.push({path: '/'});
+            } else {
+                this.token = savedSession.token;
+                this.getUsers();
+                
+            }
+    },
+    name: "Usuarios",
+    props: {},
+    mixins: [validationMixin],
+    validations: {
     nombres: {
       required
     },
@@ -156,17 +239,49 @@ export default {
   },
   data() {
     return {
-      snackbar: false,
-      y: "top",
-      x: null,
-      mode: "",
-      timeout: 6000,
-      message: {
-        success: true,
-        content: ""
-      },
-      selectPrivilegio: null,
-      items: [
+        id: 0,
+        token: "",
+        search: "",
+        action: "",
+        title: "",
+        headers: [
+            {
+                text: "ID",
+                value: "ID",
+                sortable: false
+            }, {
+                text: "Email",
+                value: "EMA",
+                sortable: false
+            }, {
+                text: "Nombres",
+                value: "FUL_NOM",
+                sortable: false
+            }, {
+                text: "Estado",
+                value: "STA",
+                sortable: false
+            }, {
+                text: "Fecha de Creación",
+                value: "FEC_CRE",
+                sortable: false
+            }, {
+                text: "Acciones",
+                sortable: false
+            }
+        ],
+        arrItems: [],
+        snackbar: false,
+        y: "top",
+        x: null,
+        mode: "",
+        timeout: 6000,
+        message: {
+            success: true,
+            content: ""
+        },
+        selectPrivilegio: null,
+        items: [
           {
               text: "Repartidor",
               value: 4
@@ -189,7 +304,11 @@ export default {
       apellidos: "",
       email: "",
       password: "",
-      c_password: ""
+      c_password: "",
+      read: false,
+      barcode: "",
+      disableEmail: false,
+      disablePriv: false
     };
   },
   computed: {
@@ -315,8 +434,13 @@ export default {
       }
     },
     dialogEvent(status) {
-      this.dialog = status;
-      this.$v.$reset();
+        let self = this;
+        
+        self.dialog = status;
+        setTimeout(function() {
+            self.title = "Registrar Usuario";
+        }, 200);
+        self.$v.$reset();
     },
     handleSnackbar(success, content) {
       let self = this;
@@ -334,6 +458,159 @@ export default {
         this.email = "";
         this.password = "";
         this.c_password = "";
+    },
+    getUsers() {
+        let self = this;
+        
+        axios({
+            method: "GET",
+            url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.GETUSERS,
+            headers: {
+                "Authorization": "Bearer " + self.token
+                }
+            })
+            .then(success => {
+                for (let i = 0; i < success.data.rows.length; i++) {
+                    if (success.data.rows[i].STA == 1) {
+                        success.data.rows[i].STA = "Activo";
+                    }
+
+                    success.data.rows[i].FEC_CRE = moment(success.data.rows[i].FEC_CRE).format('DD/MM/YYYY');
+                    self.arrItems.push(success.data.rows[i]);
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    self.$localStorage.remove('session');
+                    self.$router.push({path: '/'});
+                } else {
+                    console.log(err);
+                }
+            });
+    },
+    seeUser(user) {
+        let self = this;
+        let decodeCredentials = JSON.parse(atob(user.CRE));
+        let privilege = "";
+
+        self.action = "see";
+        self.title = "Ver Usuario";
+        self.read = true;
+        self.nombres = user.NOM;
+        self.apellidos = user.APE;
+        self.email = user.EMA;
+
+        if (decodeCredentials[0].right == 0) {
+            privilege = "Administrador";
+        } else if (decodeCredentials[0].right == 1) {
+            privilege = "Encargado Gral";
+        } else if (decodeCredentials[0].right == 2) {
+            privilege = "Cajero";
+        } else if (decodeCredentials[0].right == 3) {
+            privilege = "Vendedor";
+        } else {
+            privilege = "Repartidor";
+        }
+
+        self.selectPrivilegio = privilege;
+        self.barcode = decodeCredentials[2].barcode;
+
+        self.dialog = !self.dialog;
+    },
+    editUser(user) {
+        let self = this;
+        let decodeCredentials = JSON.parse(atob(user.CRE));
+        let privilege = "";
+
+        self.action = "edit";
+        self.title = "Actualizar Usuario";
+        
+        self.nombres = user.NOM;
+        self.apellidos = user.APE;
+        self.email = user.EMA;
+        if (decodeCredentials[0].right == 0) {
+            privilege = "Administrador";
+        } else if (decodeCredentials[0].right == 1) {
+            privilege = "Encargado Gral";
+        } else if (decodeCredentials[0].right == 2) {
+            privilege = "Cajero";
+        } else if (decodeCredentials[0].right == 3) {
+            privilege = "Vendedor";
+        } else {
+            privilege = "Repartidor";
+        }
+
+        self.selectPrivilegio = privilege;
+        self.disableEmail = true;
+        self.disablePriv = true;    
+
+        self.dialog = !self.dialog;
+
+        // console.log(self.action);
+
+        // console.log(user);
+    },
+    addUser() {
+        let self= this;
+
+        self.action = "add";
+        self.title = "Registrar Usuario";
+
+        self.read = false;
+        self.nombres = "";
+        self.apellidos = "";
+        self.email = "";
+
+
+
+        self.dialog = !self.dialog;
+    },
+    showBarcode() {
+        window.open(CONFIG.SERVICE_BASE+CONFIG.SERVICE_URL.GENERATEBARCODE+'/'+this.barcode);
+    },
+    refresh() {
+        let self = this;
+        
+        self.arrItems = [];
+        
+        setTimeout(function() {
+            self.getUsers();
+        }, 200);
+    },
+    deleteUser(user) {
+        let self = this;
+
+        let conf = confirm("Esta seguro de Eliminar este usuario " + user.EMA);
+
+        if (conf === true) {
+            axios({
+                method: "DELETE",
+                url: CONFIG.SERVICE_BASE + CONFIG.SERVICE_URL.DELETEUSERS + "/"+user.ID,
+                headers: {
+                    "Authorization": "Bearer " + self.token
+                    }
+                })
+                .then(success => {
+                    let response = success.data;
+                    
+                    self.message.success = response.success;
+                    self.message.content = response.content;
+                                        
+                    self.handleSnackbar(self.message.success, self.message.content);
+                    self.refresh();
+
+                })
+                .catch(err => {
+                    if (err.response.status === 401) {
+                        self.$localStorage.remove('session');
+                        self.$router.push({path: '/'});
+                    } else {
+                        console.log(err);
+                    }
+                });
+        } else {
+            return false;
+        }
     }
   }
 };
