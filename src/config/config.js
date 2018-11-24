@@ -55,7 +55,8 @@ const CONFIG = {
         "GETFAVOR": "/get-favor",
         "CTACTE": "/cta-cte",
         "GETUSERS": "/users/get",
-        "DELETEUSERS": "/users/soft-delete"
+        "DELETEUSERS": "/users/soft-delete",
+        "RMACLIENT": "/rma/client"
     }
 };
 
