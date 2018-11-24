@@ -35,6 +35,9 @@
                 <div v-if="transitionComponent === 'Home'">
                     Welcome
                 </div>
+                <div v-else-if="transitionComponent === 'Perfil'">
+                    <detalle-perfil />
+                </div>
                 <div v-else-if="transitionComponent === 'Artículos'">
                     <lista-articulos :right="rightNumber" />
                 </div>
@@ -70,6 +73,9 @@
                 </div>
                 <div v-else-if="transitionComponent === 'Cobros'">
                     <lista-cobros />
+                </div>
+                <div v-else-if="transitionComponent === 'RMA'">
+                    <lista-rma />
                 </div>
             </v-layout>
         </v-container>
@@ -126,6 +132,8 @@ import Ventas from "@/components/Ventas/Ventas";
 import Facturas from "@/components/Facturas/Facturas";
 import Cobros from "@/components/Cobros/Cobros";
 import Usuarios from "@/components/Usuarios/Usuarios";
+import Perfil from "@/components/Perfil/Perfil";
+import RMA from "@/components/RMA/RMA";
 
 // Config
 import { 
@@ -144,7 +152,9 @@ export default {
         'lista-ventas': Ventas,
         'lista-facturas': Facturas,
         'lista-cobros': Cobros,
-        'lista-usuarios': Usuarios
+        'lista-usuarios': Usuarios,
+        'detalle-perfil': Perfil,
+        'lista-rma': RMA
     },
     beforeMount() {
         this.title = 'Darsena-17';
@@ -294,6 +304,12 @@ export default {
             } else if (option === 'Usuario') {
                 if (self.transitionComponent !== 'Usuario') {
                     self.transitionComponent = 'Usuario';
+                    self.$localStorage.set('componentActive', self.transitionComponent);
+                }
+                this.toggleDrawer();
+            } else if (option === 'RMA') {
+                if (self.transitionComponent !== 'RMA') {
+                    self.transitionComponent = 'RMA';
                     self.$localStorage.set('componentActive', self.transitionComponent);
                 }
                 this.toggleDrawer();

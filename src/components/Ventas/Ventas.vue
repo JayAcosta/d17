@@ -545,7 +545,8 @@ export default {
                                  CANTIDAD: self.cantidad,
                                  DESCRIPCION: self.descripcion,
                                  PRECIO: self.precio,
-                                 SUBTOTAL: self.subtotal
+                                 SUBTOTAL: self.subtotal,
+                                 FECHA: moment().format()
                              });
                              break;
                             }
@@ -559,7 +560,8 @@ export default {
                         CANTIDAD: self.cantidad,
                         DESCRIPCION: self.descripcion,
                         PRECIO: self.precio,
-                        SUBTOTAL: self.subtotal
+                        SUBTOTAL: self.subtotal,
+                        FECHA: moment().format()
                     });
                     
                     self.total = (parseFloat(self.total) + parseFloat(self.subtotal));

@@ -162,7 +162,7 @@
                                 @selected="selectClient"
                                 :items="itemsClients"
                                 v-model="selectClient"
-                                label="Seleccione un Cliente"
+                                label="Seleccione un Proveedor"
                                 single-line
                                 item-text="clientName"
                                 return-object
